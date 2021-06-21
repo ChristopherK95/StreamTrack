@@ -141,6 +141,36 @@
                             MouseLeave="AddButton_MouseLeave">
                     <fa:ImageAwesome x:Name="AddButton" Icon="Search" Width="25" Height="25" Foreground="Gray"/>
                 </Button>
+                <StackPanel Grid.Column="1" VerticalAlignment="Stretch" Height="40">
+                    <Grid VerticalAlignment="Stretch" Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Name="TimerLabel"
+                               Grid.Column="0"
+                               Content="Updated 0s ago"
+                               Foreground="#FFCCCCCC"
+                               HorizontalContentAlignment="Right"
+                               VerticalAlignment="Center">
+
+                        </Label>
+                        
+                        <fa:ImageAwesome Name="RefreshIcon"
+                                         Grid.Column="1" 
+                                         Icon="Refresh" 
+                                         Width="15" 
+                                         Height="15" 
+                                         Foreground="White" 
+                                         VerticalAlignment="Center"
+                                         Margin="5"
+                                         SpinDuration="0.5"
+                                         MouseDown="RefreshIcon_MouseDown"/>
+                    </Grid>
+                    
+                </StackPanel>
+                
+                
                 <TextBox x:Name="SearchBox"
                              Grid.Column="1"
                              HorizontalAlignment="Stretch"

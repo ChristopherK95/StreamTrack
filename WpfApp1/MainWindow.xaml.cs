@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Resources;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace WpfApp1
 {
@@ -40,25 +41,50 @@ namespace WpfApp1
         delegate void Load_result_panels_callback(int i);
         Grid streamerGrid;
         StreamWriter fileWriter;
-
+        DispatcherTimer dt;
+        DispatcherTimer RefreshAnimation;
         public MainWindow()
         {
             InitializeComponent();
             LoadTwitchKey();
             StartupStreamerData();
             UpdateStatus();
+            dt = new();
+            dt.Interval = TimeSpan.FromSeconds(1);
+            dt.Tick += dtTicker;
+            dt.Start();
+
+            RefreshAnimation = new();
+            RefreshAnimation.Interval = TimeSpan.FromSeconds(1);
+            RefreshAnimation.Tick += RefreshTicker;
+        }
+        
+        public int increment = 0;
+        private void dtTicker(object sender, EventArgs e)
+        {
+            increment += 1;
+            TimerLabel.Content = "Updated " + increment + "s ago";
         }
 
+        private void RefreshTicker(object sender, EventArgs e)
+        {
+            RefreshIcon.Spin = false;
+            RefreshAnimation.Stop();
+        }
+        
         public async void UpdateStatus()
         {
+            //Monitor monitor = new();
             while (true)
             {
                 await Task.Run(() =>
                 {
                     Thread.Sleep(TimeSpan.FromMinutes(1));
-                    
                 });
+                RefreshIcon.Spin = true;
+                RefreshAnimation.Start();
                 LoadStreamers();
+                increment = 0;
                 Debug.WriteLine("Updating Status...");
             };
         }
@@ -320,7 +346,7 @@ namespace WpfApp1
 
         private async void SearchBox_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter)
+            if(e.Key == Key.Enter && SearchBox.Text != "")
             {
                 if(SearchResults.Count > 0)
                 {
@@ -380,7 +406,7 @@ namespace WpfApp1
             PanelGrid.ColumnDefinitions.Add(ImgCol);
             PanelGrid.ColumnDefinitions.Add(NameCol);
             PanelGrid.ColumnDefinitions.Add(AddCol);
-
+            
             Image ProfileImg = new() { Source = new BitmapImage(new Uri(SearchResults[i].thumbnail_url)) { DecodePixelHeight = 50, DecodePixelWidth = 50 }, Width = 50, HorizontalAlignment = HorizontalAlignment.Left };
             PanelGrid.Children.Add(ProfileImg);
             Grid.SetColumn(ProfileImg, 0);
@@ -389,36 +415,48 @@ namespace WpfApp1
             PanelGrid.Children.Add(Name);
             Grid.SetColumn(Name, 1);
 
+            
+
             FontAwesome.WPF.FontAwesome Add = new() 
-            { 
-                Icon = FontAwesome.WPF.FontAwesomeIcon.Plus, 
-                FontSize = 40, 
-                Foreground = new SolidColorBrush(Color.FromArgb(100,255,255,255)),
+            {
+                FontSize = 40,
+                Foreground = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Cursor = Cursors.Hand
             };
-            Add.MouseEnter += (sender, e) =>
+
+            if (savedStreamers.Exists(item => item.id == SearchResults[i].id))
             {
-                if(Add.Icon == FontAwesome.WPF.FontAwesomeIcon.Plus)
-                {
-                    Add.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                }
-            };
-            Add.MouseLeave += (sender, e) =>
-            {
-                if(Add.Icon == FontAwesome.WPF.FontAwesomeIcon.Plus)
-                {
-                    Add.Foreground = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
-                }
-            };
-            Add.MouseLeftButtonUp += (sender, e) =>
-            {
-                SaveStreamer(SearchResults[i]);
-                LoadStreamers();
                 Add.Icon = FontAwesome.WPF.FontAwesomeIcon.Check;
                 Add.Foreground = new SolidColorBrush(Color.FromArgb(255, 62, 194, 64));
-            };
+            }
+            else
+            {
+                Add.Icon = FontAwesome.WPF.FontAwesomeIcon.Plus;
+                Add.MouseEnter += (sender, e) =>
+                {
+                    if (Add.Icon == FontAwesome.WPF.FontAwesomeIcon.Plus)
+                    {
+                        Add.Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+                    }
+                };
+                Add.MouseLeave += (sender, e) =>
+                {
+                    if (Add.Icon == FontAwesome.WPF.FontAwesomeIcon.Plus)
+                    {
+                        Add.Foreground = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+                    }
+                };
+                Add.MouseLeftButtonUp += (sender, e) =>
+                {
+                    SaveStreamer(SearchResults[i]);
+                    LoadStreamers();
+                    Add.Icon = FontAwesome.WPF.FontAwesomeIcon.Check;
+                    Add.Foreground = new SolidColorBrush(Color.FromArgb(255, 62, 194, 64));
+                };
+            }
+            
             PanelGrid.Children.Add(Add);
             Grid.SetColumn(Add, 2);
 
@@ -481,7 +519,7 @@ namespace WpfApp1
         {
             if(e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove();
+                DragMove();
             }
         }
 
@@ -489,11 +527,13 @@ namespace WpfApp1
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove();
+                DragMove();
             }
         }
 
+        private void RefreshIcon_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            
+        }
     }
-
-    
 }
