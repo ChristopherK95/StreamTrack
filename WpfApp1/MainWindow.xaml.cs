@@ -5,21 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Resources;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace WpfApp1
@@ -29,20 +22,27 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        string path;
-        List<Streamer> streamers = new();
+        // Brushes.
+        readonly SolidColorBrush IconWhite = new(Colors.White);
+        readonly SolidColorBrush IconGray = new(Colors.Gray);
+
+        // Strings.
+        private string path;
+        private string authKey;
+
+        // Lists.
+        List<Streamer> Streamers = new();
         List<StreamerSearchResult> SearchResults = new();
-        List<SavedStreamer> savedStreamers = new();
-        List<Newtonsoft.Json.Linq.JObject> jsonList = new();
+        List<SavedStreamer> SavedStreamers = new();
+        List<Newtonsoft.Json.Linq.JObject> JsonList = new();
+
         HttpClient httpClient = new();
-        string authKey;
-        Brush baseColor;
-        Brush hoverBrush = new SolidColorBrush(Color.FromRgb(91, 101, 115));
-        delegate void Load_result_panels_callback(int i);
-        Grid streamerGrid;
-        StreamWriter fileWriter;
+        private delegate void Load_result_panels_callback(int i);
+        Grid StreamerGrid;
+        StreamWriter FileWriter;
         DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -74,7 +74,6 @@ namespace WpfApp1
         
         public async void UpdateStatus()
         {
-            //Monitor monitor = new();
             while (true)
             {
                 await Task.Run(() =>
@@ -85,7 +84,6 @@ namespace WpfApp1
                 RefreshAnimation.Start();
                 LoadStreamers();
                 increment = 0;
-                Debug.WriteLine("Updating Status...");
             };
         }
 
@@ -95,8 +93,8 @@ namespace WpfApp1
             Debug.WriteLine(path);
             if (!File.Exists(path))
             {
-                fileWriter = File.CreateText(path);
-                fileWriter.Write("");
+                FileWriter = File.CreateText(path);
+                FileWriter.Write("");
             }
             else
             {
@@ -105,8 +103,8 @@ namespace WpfApp1
                     string jsonString = fileReader.ReadToEnd();
                     if (jsonString != "")
                     {
-                        jsonList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Newtonsoft.Json.Linq.JObject>>(jsonString);
-                        savedStreamers = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SavedStreamer>>(jsonString);
+                        JsonList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Newtonsoft.Json.Linq.JObject>>(jsonString);
+                        SavedStreamers = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SavedStreamer>>(jsonString);
 
                         dynamic fetchedData = await GetStreamerStatus();
                         dynamic objectData = Newtonsoft.Json.JsonConvert.DeserializeObject(fetchedData);
@@ -116,7 +114,7 @@ namespace WpfApp1
                         {
                             string streamerString = Newtonsoft.Json.JsonConvert.SerializeObject(s);
                             Streamer streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(streamerString);
-                            streamers.Add(streamer);
+                            Streamers.Add(streamer);
                         }
                         LoadStreamers();
                     }
@@ -126,88 +124,75 @@ namespace WpfApp1
 
         public async Task<dynamic> GetStreamerStatus()
         {
-            string url = "https://api.twitch.tv/helix/streams?user_id=" + savedStreamers[0].id;
-            if (savedStreamers.Count() > 1)
+            string url = "https://api.twitch.tv/helix/streams?user_id=" + SavedStreamers[0].id;
+            if (SavedStreamers.Count() > 1)
             {
-                for (int i = 1; i < savedStreamers.Count(); i++)
+                for (int i = 1; i < SavedStreamers.Count(); i++)
                 {
-                    url += "&user_id=" + savedStreamers[i].id;
+                    url += "&user_id=" + SavedStreamers[i].id;
                 }
             }
-            
+
             HttpClient hc = new();
             hc.DefaultRequestHeaders.Add("Authorization", "Bearer " + authKey);
             hc.DefaultRequestHeaders.Add("Client-Id", "p4dvj9r4r5jnih8uq373imda1n2v0j");
 
-            Task<Stream> result = hc.GetStreamAsync(url);
+            Task<Stream> Result = hc.GetStreamAsync(url);
 
-            Stream vs = await result;
+            Stream vs = await Result;
             StreamReader am = new(vs);
-            
+
             return await am.ReadToEndAsync();
         }
 
-        void stackpanel_MouseEnter(object sender, MouseEventArgs e)
-        {
-            StackPanel stackpanel = (StackPanel)sender;
-            baseColor = stackpanel.Background;
-            stackpanel.Background = hoverBrush;
-        }
-
-        void stackpanel_MouseLeave(object sender, MouseEventArgs e)
-        {
-            StackPanel stackpanel = (StackPanel)sender;
-            stackpanel.Background = baseColor;
-        }
-
-        
-
         public async void LoadStreamers()
         {
-            dynamic fetchedData = await GetStreamerStatus();
-            dynamic objectData = Newtonsoft.Json.JsonConvert.DeserializeObject(fetchedData);
-            dynamic liveStreamers = objectData["data"];
+            dynamic FetchedData = await GetStreamerStatus();
+            dynamic ObjectData = Newtonsoft.Json.JsonConvert.DeserializeObject(FetchedData);
+            dynamic LiveStreamers = ObjectData["data"];
 
-            if(streamers.Count > 0)
+            if(Streamers.Count > 0)
             {
-                streamers.Clear();
+                Streamers.Clear();
             }
-            foreach (var s in liveStreamers)
+            foreach (dynamic s in LiveStreamers)
             {
-                string streamerString = Newtonsoft.Json.JsonConvert.SerializeObject(s);
-                Streamer streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(streamerString);
-                streamers.Add(streamer);
+                string StreamerString = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+                Streamer Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(StreamerString);
+                Streamers.Add(Streamer);
             }
 
-            streamerPanel.Children.Clear();
+            StreamerPanel.Children.Clear();
 
-            streamerGrid = new() { Name = "StreamerGrid", Height = Double.NaN, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Stretch };
-            for (int i = 0; i < savedStreamers.Count; i++)
+            StreamerGrid = new() { Name = "StreamerGrid", Height = Double.NaN, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Stretch };
+            for (int i = 0; i < SavedStreamers.Count; i++)
             {
-                RowDefinition streamerRow = new() { Height = new GridLength(60) };
-                streamerRow.Name = "streamerRow" + i;
-                Grid rowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
-                ColumnDefinition imgCol = new() { Width = GridLength.Auto };
-                ColumnDefinition nameCol = new();
-                rowColumns.ColumnDefinitions.Add(imgCol);
-                rowColumns.ColumnDefinitions.Add(nameCol);
-                
-                streamerGrid.Children.Add(rowColumns);
-                Grid.SetRow(rowColumns, i);
+                RowDefinition StreamerRow = new() { Height = new GridLength(60) };
+                Grid RowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
+                ColumnDefinition ImgCol = new() { Width = GridLength.Auto };
+                ColumnDefinition NameCol = new();
+                RowColumns.ColumnDefinitions.Add(ImgCol);
+                RowColumns.ColumnDefinitions.Add(NameCol);
 
-                Image profileImg = new()
+                StackPanel StreamerRowPanel = new();
+                StreamerRowPanel.Children.Add(RowColumns);
+
+                StreamerGrid.Children.Add(StreamerRowPanel);
+                Grid.SetRow(StreamerRowPanel, i);
+
+                Image ProfileImg = new()
                 {
                     Width = 60,
                     Height = 60,
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    Source = new BitmapImage(new Uri(savedStreamers[i].thumbnail_url)) { DecodePixelHeight = 60, DecodePixelWidth = 60}
+                    Source = new BitmapImage(new Uri(SavedStreamers[i].thumbnail_url)) { DecodePixelHeight = 60, DecodePixelWidth = 60}
                 };
-                rowColumns.Children.Add(profileImg);
-                Grid.SetColumn(profileImg, 0);
+                RowColumns.Children.Add(ProfileImg);
+                Grid.SetColumn(ProfileImg, 0);
 
-                Label name = new()
+                Label Name = new()
                 {
-                    Content = savedStreamers[i].name,
+                    Content = SavedStreamers[i].name,
                     FontSize = 20,
                     FontWeight = FontWeights.Bold,
                     Foreground = new SolidColorBrush(Colors.White),
@@ -215,7 +200,7 @@ namespace WpfApp1
                     Padding = new Thickness(5, 2, 0, 0)
                 };
 
-                FontAwesome.WPF.FontAwesome live = new()
+                FontAwesome.WPF.FontAwesome Live = new()
                 {
                     Icon = FontAwesome.WPF.FontAwesomeIcon.Circle,
                     FontSize = 12,
@@ -225,7 +210,7 @@ namespace WpfApp1
                     ToolTip = "Live"
                 };
 
-                TextBlock titleContent = new()
+                TextBlock TitleContent = new()
                 {
                     FontSize = 12,
                     FontFamily = new FontFamily("Arial Black"),
@@ -234,86 +219,91 @@ namespace WpfApp1
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
 
-                Label title = new()
+                Label Title = new()
                 {
                     VerticalAlignment = VerticalAlignment.Top,
                     Padding = new Thickness(5, 0, 0, 0),
-                    Content = titleContent,
+                    Content = TitleContent,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     
                 };
 
-                for (int j = 0; j < streamers.Count; j++)
+                for (int j = 0; j < Streamers.Count; j++)
                 {
-                    if(savedStreamers[i].id == streamers[j].user_id)
+                    if(SavedStreamers[i].id == Streamers[j].user_id)
                     {
-                        titleContent.Text = streamers[j].title;
-                        titleContent.ToolTip = streamers[j].title;
-                        live.Foreground = new SolidColorBrush(Color.FromRgb(233, 25, 22));
-                        streamerRow.Tag = "live";
+                        TitleContent.Text = Streamers[j].title;
+                        TitleContent.ToolTip = Streamers[j].title;
+                        Live.Foreground = new SolidColorBrush(Color.FromRgb(233, 25, 22));
+                        StreamerRow.Tag = "live";
                     }
                 }
                 
-                Grid rows = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
-                RowDefinition upperRow = new() { Height = new GridLength(30) };
-                RowDefinition lowerRow = new() { Height = new GridLength(30) };
-                rows.RowDefinitions.Add(upperRow);
-                rows.RowDefinitions.Add(lowerRow);
+                Grid Rows = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
+                RowDefinition UpperRow = new() { Height = new GridLength(30) };
+                RowDefinition LowerRow = new() { Height = new GridLength(30) };
+                Rows.RowDefinitions.Add(UpperRow);
+                Rows.RowDefinitions.Add(LowerRow);
 
-                WrapPanel textPanel = new()
+                WrapPanel TextPanel = new()
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
-                rows.Children.Add(textPanel);
-                Grid.SetRow(textPanel, 0);
+                Rows.Children.Add(TextPanel);
+                Grid.SetRow(TextPanel, 0);
 
-                WrapPanel titlePanel = new()
+                WrapPanel TitlePanel = new()
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
-                rows.Children.Add(titlePanel);
-                Grid.SetRow(titlePanel, 1);
-                
-                textPanel.Children.Add(name);
-                textPanel.Children.Add(live);
+                Rows.Children.Add(TitlePanel);
+                Grid.SetRow(TitlePanel, 1);
 
-                titlePanel.Children.Add(title);
+                TextPanel.Children.Add(Name);
+                TextPanel.Children.Add(Live);
 
-                rowColumns.Children.Add(rows);
-                Grid.SetColumn(rows, 1);
+                TitlePanel.Children.Add(Title);
 
-                streamerGrid.RowDefinitions.Add(streamerRow);
+                RowColumns.Children.Add(Rows);
+                Grid.SetColumn(Rows, 1);
+
+                StreamerGrid.RowDefinitions.Add(StreamerRow);
             }
             int order = 0;
-            for (int i = 0; i < savedStreamers.Count; i++)
+            for (int i = 0; i < SavedStreamers.Count; i++)
             {
-                if (streamerGrid.RowDefinitions[i].Tag != null && streamerGrid.RowDefinitions[i].Tag.ToString() == "live")
+                if (StreamerGrid.RowDefinitions[i].Tag != null && StreamerGrid.RowDefinitions[i].Tag.ToString() == "live")
                 {
-                    Grid.SetRow(streamerGrid.Children[i], order);
+                    Grid.SetRow(StreamerGrid.Children[i], order);
                     order++;
                 }
             }
-            for(int i = 0; i < savedStreamers.Count; i++)
+            for(int i = 0; i < SavedStreamers.Count; i++)
             {
-                if (streamerGrid.RowDefinitions[i].Tag == null)
+                if (StreamerGrid.RowDefinitions[i].Tag == null)
                 {
-                    Grid.SetRow(streamerGrid.Children[i], order);
+                    Grid.SetRow(StreamerGrid.Children[i], order);
                     order++;
                 }
             }
 
-            streamerPanel.Children.Add(streamerGrid);
+            for(int i = 0; i < StreamerGrid.Children.Count; i++)
+            {
+                StreamerGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(StreamerGrid.Children[i]) % 2 == 0 ? Color.FromRgb(28, 32, 38) : Color.FromRgb(43, 47, 54)));
+            }
+
+            StreamerPanel.Children.Add(StreamerGrid);
         }
 
         public void LoadTwitchKey()
         {
             string url = "https://id.twitch.tv/oauth2/token?client_id=p4dvj9r4r5jnih8uq373imda1n2v0j&client_secret=r5lartsu3ag7i7nc59owx30u9dste6&grant_type=client_credentials";
-            HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
-            webRequest.Method = "POST";
-            dynamic wResponse = webRequest.GetResponse().GetResponseStream();
-            StreamReader reader = new(wResponse);
-            dynamic res = reader.ReadToEnd();
-            reader.Close();
+            HttpWebRequest WebRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+            WebRequest.Method = "POST";
+            dynamic wResponse = WebRequest.GetResponse().GetResponseStream();
+            StreamReader Reader = new(wResponse);
+            dynamic res = Reader.ReadToEnd();
+            Reader.Close();
             wResponse.Close();
 
             dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(res);
@@ -329,8 +319,8 @@ namespace WpfApp1
                 AddButton.Icon = FontAwesome.WPF.FontAwesomeIcon.Times;
                 SearchBox.Focus();
 
-                Storyboard slideIn = Resources["SlideIn"] as Storyboard;
-                SearchResultsPanel.BeginStoryboard(slideIn);
+                Storyboard SlideIn = Resources["SlideIn"] as Storyboard;
+                SearchResultsPanel.BeginStoryboard(SlideIn);
                 
             }
             else if(SearchBox.Visibility == Visibility.Visible)
@@ -339,8 +329,8 @@ namespace WpfApp1
                 SearchResultsPanel.Visibility = Visibility.Hidden;
                 AddButton.Icon = FontAwesome.WPF.FontAwesomeIcon.Search;
 
-                Storyboard slideOut = Resources["SlideOut"] as Storyboard;
-                SearchResultsPanel.BeginStoryboard(slideOut);
+                Storyboard SlideOut = Resources["SlideOut"] as Storyboard;
+                SearchResultsPanel.BeginStoryboard(SlideOut);
             }
         }
 
@@ -355,18 +345,18 @@ namespace WpfApp1
                     SearchResultsGrid.RowDefinitions.Clear();
                 }
                 
-                string SearchName = SearchBox.Text;
+                string searchName = SearchBox.Text;
 
-                dynamic data = await FetchData(SearchName);
+                dynamic data = await FetchData(searchName);
                 dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(data);
-                dynamic streamers = json["data"];
+                dynamic jsonStreamers = json["data"];
 
-                foreach (var s in streamers)
+                foreach (dynamic s in jsonStreamers)
                 {
-                    string JsonStreamer = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+                    string jsonStreamer = Newtonsoft.Json.JsonConvert.SerializeObject(s);
 
-                    StreamerSearchResult streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<StreamerSearchResult>(JsonStreamer);
-                    SearchResults.Add(streamer);
+                    StreamerSearchResult Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<StreamerSearchResult>(jsonStreamer);
+                    SearchResults.Add(Streamer);
                 }
 
                 LoadCog.Visibility = Visibility.Visible;
@@ -384,17 +374,17 @@ namespace WpfApp1
 
         public async Task<dynamic> FetchData(string SearchName)
         {
-            string Url = "https://api.twitch.tv/helix/search/channels?query=" + SearchName;
-            HttpClient hc = new();
-            hc.DefaultRequestHeaders.Add("Authorization", "Bearer " +  authKey);
-            hc.DefaultRequestHeaders.Add("Client-Id", "p4dvj9r4r5jnih8uq373imda1n2v0j");
+            string url = "https://api.twitch.tv/helix/search/channels?query=" + SearchName;
+            HttpClient Client = new();
+            Client.DefaultRequestHeaders.Add("Authorization", "Bearer " +  authKey);
+            Client.DefaultRequestHeaders.Add("Client-Id", "p4dvj9r4r5jnih8uq373imda1n2v0j");
             
-            Task<Stream> result = hc.GetStreamAsync(Url);
+            Task<Stream> Result = Client.GetStreamAsync(url);
 
-            Stream vs = await result;
-            StreamReader am = new(vs);
+            Stream StreamResult = await Result;
+            StreamReader StreamReaderResult = new(StreamResult);
             
-            return await am.ReadToEndAsync();
+            return await StreamReaderResult.ReadToEndAsync();
         }
 
         public void AddResult(int i)
@@ -426,7 +416,7 @@ namespace WpfApp1
                 Cursor = Cursors.Hand
             };
 
-            if (savedStreamers.Exists(item => item.id == SearchResults[i].id))
+            if (SavedStreamers.Exists(item => item.id == SearchResults[i].id))
             {
                 Add.Icon = FontAwesome.WPF.FontAwesomeIcon.Check;
                 Add.Foreground = new SolidColorBrush(Color.FromArgb(255, 62, 194, 64));
@@ -482,32 +472,29 @@ namespace WpfApp1
 
         public void SaveStreamer(StreamerSearchResult result)
         {
-            Newtonsoft.Json.Linq.JObject streamerJson = new(
+            Newtonsoft.Json.Linq.JObject StreamerJson = new(
                 new Newtonsoft.Json.Linq.JProperty("id", result.id),
                 new Newtonsoft.Json.Linq.JProperty("name", result.display_name),
                 new Newtonsoft.Json.Linq.JProperty("thumbnail_url", result.thumbnail_url));
 
-            jsonList.Add(streamerJson);
-            savedStreamers.Add(new SavedStreamer(result.id, result.display_name, result.thumbnail_url));
+            JsonList.Add(StreamerJson);
+            SavedStreamers.Add(new SavedStreamer(result.id, result.display_name, result.thumbnail_url));
 
-            using (fileWriter = File.CreateText(path))
+            using (FileWriter = File.CreateText(path))
             {
-                Newtonsoft.Json.JsonSerializer serializer = new();
-                serializer.Serialize(fileWriter, jsonList);
+                Newtonsoft.Json.JsonSerializer Serializer = new();
+                Serializer.Serialize(FileWriter, JsonList);
             }
         }
 
-        SolidColorBrush iconWhite = new SolidColorBrush(Colors.White);
-        SolidColorBrush iconGray = new SolidColorBrush(Colors.Gray);
-
         private void AddButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            AddButton.Foreground = iconWhite;
+            AddButton.Foreground = IconWhite;
         }
 
         private void AddButton_MouseLeave(object sender, MouseEventArgs e)
         {
-            AddButton.Foreground = iconGray;
+            AddButton.Foreground = IconGray;
         }
 
         private void Exit(object sender, RoutedEventArgs e)

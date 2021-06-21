@@ -185,7 +185,7 @@
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Grid.Row="2">
-            <StackPanel x:Name="streamerPanel">
+            <StackPanel x:Name="StreamerPanel">
             </StackPanel>
         </ScrollViewer>
 
