@@ -8,7 +8,11 @@
         mc:Ignorable="d"
         Title="StreamTrack" Height="500" Width="400"
         MinWidth="400" MinHeight="500"
-        Background="#22272d" WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
+        Background="#22272d" WindowStyle="None" ResizeMode="CanResize">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="4" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <Storyboard x:Key="SlideIn">
@@ -94,7 +98,7 @@
         <ImageBrush x:Name="Add_ICon" x:Key="AddIcon" ImageSource="Assets/Add.png"/>
 
     </Window.Resources>
-
+    
 
     <Grid Cursor="Arrow">
         <Grid.RowDefinitions>
@@ -201,6 +205,12 @@
                 </Grid>
             </StackPanel>
         </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Height="auto" Panel.ZIndex="100" Background="#2b2f36" VerticalAlignment="Top">
+            <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch">
+            </Grid>
+        </StackPanel>
+        
         <fa:ImageAwesome x:Name="LoadCog" Icon="Cog" Spin="True" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
     </Grid>
 </Window>

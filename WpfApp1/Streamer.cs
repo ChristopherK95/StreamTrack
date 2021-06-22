@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WpfApp1
 {
-    public class Streamer
+    public class Streamer: IEquatable<Streamer>
     {
         public string id { get; set; }
         public string user_id { get; set; }
@@ -22,5 +22,16 @@ namespace WpfApp1
         public string thumbnail_url { get; set; }
         public List<string> tag_ids { get; set; }
         public bool is_mature { get; set; }
+
+        public bool Equals(Streamer other)
+        {
+            if (other is null)
+                return false;
+
+            return this.id == other.id;
+        }
+
+        public override bool Equals(object obj) => Equals(obj as Streamer);
+        public override int GetHashCode() => (id).GetHashCode();
     }
 }

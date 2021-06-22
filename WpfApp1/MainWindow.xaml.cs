@@ -31,10 +31,13 @@ namespace WpfApp1
         private string authKey;
 
         // Lists.
-        List<Streamer> Streamers = new();
-        List<StreamerSearchResult> SearchResults = new();
-        List<SavedStreamer> SavedStreamers = new();
-        List<Newtonsoft.Json.Linq.JObject> JsonList = new();
+        private List<Streamer> Streamers = new();
+        private List<Streamer> RecentStreamers = new();
+        private List<StreamerSearchResult> SearchResults = new();
+        private List<SavedStreamer> SavedStreamers = new();
+        private List<Newtonsoft.Json.Linq.JObject> JsonList = new();
+
+        public int increment = 0;
 
         HttpClient httpClient = new();
         private delegate void Load_result_panels_callback(int i);
@@ -42,6 +45,7 @@ namespace WpfApp1
         StreamWriter FileWriter;
         DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
+        DispatcherTimer NotificationTimer = new();
 
         public MainWindow()
         {
@@ -57,9 +61,66 @@ namespace WpfApp1
             RefreshAnimation = new();
             RefreshAnimation.Interval = TimeSpan.FromSeconds(1);
             RefreshAnimation.Tick += RefreshTicker;
+
+            NotificationTimer.Interval = TimeSpan.FromSeconds(3);
+            NotificationTimer.Tick += NotifTicker;
+        }
+
+        public void Notification(string streamer, string status)
+        {
+            RowDefinition notification = new() { Height = new GridLength(40)};
+            NotificationGrid.RowDefinitions.Add(notification);
+
+            ColumnDefinition StreamerNameCol = new() { Width = GridLength.Auto };
+            ColumnDefinition TextCol = new() { Width = GridLength.Auto };
+            ColumnDefinition StatusCol = new();
+            Grid RowGrid = new();
+            RowGrid.ColumnDefinitions.Add(StreamerNameCol);
+            RowGrid.ColumnDefinitions.Add(TextCol);
+            RowGrid.ColumnDefinitions.Add(StatusCol);
+
+            NotificationGrid.Children.Add(RowGrid);
+            Grid.SetRow(RowGrid, 0);
+
+            Label StreamerName = new() 
+            { 
+                Content = streamer,
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(Colors.White),
+                Padding = new Thickness(5, 0, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
+            RowGrid.Children.Add(StreamerName);
+            Grid.SetColumn(StreamerName, 0);
+
+            Label Text = new()
+            {
+                Content = " has gone ",
+                FontSize = 16,
+                Foreground = new SolidColorBrush(Colors.White),
+                Padding = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
+            RowGrid.Children.Add(Text);
+            Grid.SetColumn(Text, 1);
+
+            Label Status = new()
+            {
+                Content = status == "live" ? "LIVE" : "OFFLINE",
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(status == "live" ? Color.FromRgb(233, 25, 22) : Color.FromRgb(117, 117, 117)),
+                Padding = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
+            RowGrid.Children.Add(Status);
+            Grid.SetColumn(Status, 2);
         }
         
-        public int increment = 0;
         private void dtTicker(object sender, EventArgs e)
         {
             increment += 1;
@@ -70,6 +131,13 @@ namespace WpfApp1
         {
             RefreshIcon.Spin = false;
             RefreshAnimation.Stop();
+        }
+
+        private void NotifTicker(object sender, EventArgs e)
+        {
+            NotificationGrid.Children.Clear();
+            NotificationGrid.RowDefinitions.Clear();
+            NotificationTimer.Stop();
         }
         
         public async void UpdateStatus()
@@ -82,6 +150,7 @@ namespace WpfApp1
                 });
                 RefreshIcon.Spin = true;
                 RefreshAnimation.Start();
+                RecentStreamers = Streamers.ToList();
                 LoadStreamers();
                 increment = 0;
             };
@@ -145,6 +214,7 @@ namespace WpfApp1
             return await am.ReadToEndAsync();
         }
 
+        // Loads all saved streamers from the save file and checks their live status, then renders them on the grid.
         public async void LoadStreamers()
         {
             dynamic FetchedData = await GetStreamerStatus();
@@ -160,6 +230,25 @@ namespace WpfApp1
                 string StreamerString = Newtonsoft.Json.JsonConvert.SerializeObject(s);
                 Streamer Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(StreamerString);
                 Streamers.Add(Streamer);
+            }
+            
+            // Checks if there is any streamer(s) that have gone live and/or offline.
+            if(RecentStreamers.Count > 0 && !RecentStreamers.SequenceEqual(Streamers))
+            {
+                dynamic offline = RecentStreamers.Except(Streamers).ToList();
+                dynamic online = Streamers.Except(RecentStreamers).ToList();
+
+                for(int i = 0; i < offline.Count; i++)
+                {
+                    // Creates a notification of the streamer that went offline.
+                    Notification(offline[i].user_name, "");
+                }
+                for (int i = 0; i < online.Count; i++)
+                {
+                    // Creates a notification of the streamer that went live.
+                    Notification(online[i].user_name, "live");
+                }
+                NotificationTimer.Start();
             }
 
             StreamerPanel.Children.Clear();
@@ -185,7 +274,7 @@ namespace WpfApp1
                     Width = 60,
                     Height = 60,
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    Source = new BitmapImage(new Uri(SavedStreamers[i].thumbnail_url)) { DecodePixelHeight = 60, DecodePixelWidth = 60}
+                    Source = new BitmapImage(new Uri(SavedStreamers[i].thumbnail_url)) { DecodePixelHeight = 60, DecodePixelWidth = 60 }
                 };
                 RowColumns.Children.Add(ProfileImg);
                 Grid.SetColumn(ProfileImg, 0);
@@ -310,9 +399,27 @@ namespace WpfApp1
             authKey = json["access_token"];
         }
 
+        public async Task<dynamic> FetchData(string SearchName)
+        {
+            string url = "https://api.twitch.tv/helix/search/channels?query=" + SearchName;
+            HttpClient Client = new();
+            Client.DefaultRequestHeaders.Add("Authorization", "Bearer " +  authKey);
+            Client.DefaultRequestHeaders.Add("Client-Id", "p4dvj9r4r5jnih8uq373imda1n2v0j");
+            
+            Task<Stream> Result = Client.GetStreamAsync(url);
+
+            Stream StreamResult = await Result;
+            StreamReader StreamReaderResult = new(StreamResult);
+            
+            return await StreamReaderResult.ReadToEndAsync();
+        }
+
+        /////////////////////////
+        // EVENTHANDLERS START //
+        /////////////////////////
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(SearchBox.Visibility == Visibility.Hidden) 
+            if (SearchBox.Visibility == Visibility.Hidden)
             {
                 SearchBox.Visibility = Visibility.Visible;
                 SearchResultsPanel.Visibility = Visibility.Visible;
@@ -321,9 +428,9 @@ namespace WpfApp1
 
                 Storyboard SlideIn = Resources["SlideIn"] as Storyboard;
                 SearchResultsPanel.BeginStoryboard(SlideIn);
-                
+
             }
-            else if(SearchBox.Visibility == Visibility.Visible)
+            else if (SearchBox.Visibility == Visibility.Visible)
             {
                 SearchBox.Visibility = Visibility.Hidden;
                 SearchResultsPanel.Visibility = Visibility.Hidden;
@@ -333,18 +440,17 @@ namespace WpfApp1
                 SearchResultsPanel.BeginStoryboard(SlideOut);
             }
         }
-
         private async void SearchBox_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter && SearchBox.Text != "")
+            if (e.Key == Key.Enter && SearchBox.Text != "")
             {
-                if(SearchResults.Count > 0)
+                if (SearchResults.Count > 0)
                 {
                     SearchResults.Clear();
                     SearchResultsGrid.Children.Clear();
                     SearchResultsGrid.RowDefinitions.Clear();
                 }
-                
+
                 string searchName = SearchBox.Text;
 
                 dynamic data = await FetchData(searchName);
@@ -371,22 +477,6 @@ namespace WpfApp1
                 SearchResultsGrid.Visibility = Visibility.Visible;
             }
         }
-
-        public async Task<dynamic> FetchData(string SearchName)
-        {
-            string url = "https://api.twitch.tv/helix/search/channels?query=" + SearchName;
-            HttpClient Client = new();
-            Client.DefaultRequestHeaders.Add("Authorization", "Bearer " +  authKey);
-            Client.DefaultRequestHeaders.Add("Client-Id", "p4dvj9r4r5jnih8uq373imda1n2v0j");
-            
-            Task<Stream> Result = Client.GetStreamAsync(url);
-
-            Stream StreamResult = await Result;
-            StreamReader StreamReaderResult = new(StreamResult);
-            
-            return await StreamReaderResult.ReadToEndAsync();
-        }
-
         public void AddResult(int i)
         {
             Grid PanelGrid = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
