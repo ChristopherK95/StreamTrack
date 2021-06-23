@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -36,6 +39,15 @@ namespace WpfApp1
         private List<StreamerSearchResult> SearchResults = new();
         private List<SavedStreamer> SavedStreamers = new();
         private List<Newtonsoft.Json.Linq.JObject> JsonList = new();
+        List<RowDefinition> StreamerRowList = new();
+        List<Image> ProfileImageList = new();
+
+        private static double _height;
+        public double height
+        {
+            get { return _height; }
+            set { _height = value; } 
+        }
 
         public int increment = 0;
 
@@ -46,10 +58,10 @@ namespace WpfApp1
         DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
         DispatcherTimer NotificationTimer = new();
-
         public MainWindow()
         {
             InitializeComponent();
+            height = 60;
             LoadTwitchKey();
             StartupStreamerData();
             UpdateStatus();
@@ -252,17 +264,18 @@ namespace WpfApp1
             }
 
             StreamerPanel.Children.Clear();
-
+            
             StreamerGrid = new() { Name = "StreamerGrid", Height = Double.NaN, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Stretch };
             for (int i = 0; i < SavedStreamers.Count; i++)
             {
-                RowDefinition StreamerRow = new() { Height = new GridLength(60) };
-                Grid RowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
+                RowDefinition StreamerRow = new() { Height = new GridLength(SettingsVariables.height) };
+                StreamerRowList.Add(StreamerRow);
+                
+                Grid RowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch};
                 ColumnDefinition ImgCol = new() { Width = GridLength.Auto };
                 ColumnDefinition NameCol = new();
                 RowColumns.ColumnDefinitions.Add(ImgCol);
                 RowColumns.ColumnDefinitions.Add(NameCol);
-
                 StackPanel StreamerRowPanel = new();
                 StreamerRowPanel.Children.Add(RowColumns);
 
@@ -271,11 +284,13 @@ namespace WpfApp1
 
                 Image ProfileImg = new()
                 {
-                    Width = 60,
-                    Height = 60,
+                    Width = SettingsVariables.height,
+                    Height = SettingsVariables.height,
                     HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Center,
                     Source = new BitmapImage(new Uri(SavedStreamers[i].thumbnail_url)) { DecodePixelHeight = 60, DecodePixelWidth = 60 }
                 };
+                ProfileImageList.Add(ProfileImg);
                 RowColumns.Children.Add(ProfileImg);
                 Grid.SetColumn(ProfileImg, 0);
 
@@ -329,8 +344,8 @@ namespace WpfApp1
                 }
                 
                 Grid Rows = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
-                RowDefinition UpperRow = new() { Height = new GridLength(30) };
-                RowDefinition LowerRow = new() { Height = new GridLength(30) };
+                RowDefinition UpperRow = new() ;
+                RowDefinition LowerRow = new() ;
                 Rows.RowDefinitions.Add(UpperRow);
                 Rows.RowDefinitions.Add(LowerRow);
 
@@ -611,6 +626,13 @@ namespace WpfApp1
         private void RefreshIcon_MouseDown(object sender, MouseButtonEventArgs e)
         {
             
+        }
+
+
+        private void Settings(object sender, RoutedEventArgs e)
+        {
+            Settings settingsWindow = new(StreamerRowList, ProfileImageList, height);
+            settingsWindow.Show();
         }
     }
 }

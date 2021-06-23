@@ -112,11 +112,15 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="0" Content="StreamTrack" FontSize="15" FontFamily="Arial Black" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown" FontWeight="Normal"/>
             <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent"/>
-            <Button Style="{StaticResource ExitButton}" Grid.Column="2" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="5" Click="Exit">
+            <Button Style="{StaticResource SettingsButton}" Grid.Column="2" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="0" Click="Settings">
+                <fa:ImageAwesome Icon="Cog" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+            </Button>
+            <Button Style="{StaticResource ExitButton}" Grid.Column="3" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="5" Click="Exit">
                 <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
             </Button>
 
