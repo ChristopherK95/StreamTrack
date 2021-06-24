@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WpfApp1" xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         Title="Settings" WindowStyle="None" ResizeMode="NoResize" Height="300" Width="400">
-    <Grid Background="#1c2026">
+    <Grid Background="#1c2026" UseLayoutRounding="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
@@ -60,13 +60,31 @@
                     TickPlacement="BottomRight"
                     TickFrequency="5"
                     IsSnapToTickEnabled="True"
-                    FontSize="10"
                     Style="{StaticResource SettingsSlider}"/>
-            
-            
+
+            <Label Grid.Row="2"
+                   x:Name="FontSizeLabel"
+                   Content="Font size:"
+                   Foreground="White"
+                   FontSize="18"
+                   FontFamily="Consolas"
+                   FontWeight="Bold"
+                   HorizontalContentAlignment="Center"/>
+
+            <Slider Grid.Row="3"
+                    x:Name="FontSizeSlider"
+                    HorizontalAlignment="Center"
+                    Value="2"
+                    Minimum="1"
+                    Maximum="3"
+                    TickPlacement="BottomRight"
+                    TickFrequency="1"
+                    IsSnapToTickEnabled="True"
+                    Style="{StaticResource SettingsSlider}"/>
         </Grid>
 
-        <Button Grid.Row="2" 
+        <Button x:Name="SaveButton"
+                Grid.Row="2" 
                 Content="Save" 
                 FontSize="20" 
                 FontWeight="Bold" 
@@ -74,9 +92,13 @@
                 HorizontalAlignment="Right" 
                 Margin="0, 0, 10, 10"
                 BorderThickness="0"
-                Background="#FF2C2E3E"
-                Foreground="#FFB9B9B9"
-                Click="Save"/>
-        
+                Foreground="White"
+                Click="Save"
+                Style="{StaticResource SaveButton}">
+            <Button.Effect>
+                <DropShadowEffect x:Name="SaveButtonShadow" Color="Black" Direction="320" ShadowDepth="5"  Opacity="0.5"/>
+            </Button.Effect>
+        </Button>
+
     </Grid>
 </Window>

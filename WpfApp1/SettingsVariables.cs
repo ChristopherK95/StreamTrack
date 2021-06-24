@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,10 +13,11 @@ namespace WpfApp1
     {
 
         public static double height;
+        public static int fontSize;
         static string path;
         private static StreamWriter FileWriter;
         public static List<Setting> SettingList = new();
-        public static List<Newtonsoft.Json.Linq.JObject> JsonList = new();
+        public static List<JObject> JsonList = new();
         static SettingsVariables()
         {
             LoadSettings();
@@ -26,14 +28,7 @@ namespace WpfApp1
             path = Environment.CurrentDirectory + "\\Settings.json";
             if (!File.Exists(path))
             {
-                FileWriter = File.CreateText(path);
-
-                //JsonList.Add(new Setting() { name = "height", value = 60 });
-                using (FileWriter = File.CreateText(path))
-                {
-                    Newtonsoft.Json.JsonSerializer Serializer = new();
-                    Serializer.Serialize(FileWriter, JsonList);
-                }
+                LoadDefault();
             }
             else
             {
@@ -44,46 +39,87 @@ namespace WpfApp1
                     if (jsonString != "")
                     {
                         SettingList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Setting>>(jsonString);
-                        
-                        height = SettingList.Find(x => x.name.Contains("height")).value;
+
+                        if(SettingList.Count == 2)
+                        {
+                            try
+                            {
+                                height = SettingList.Find(x => x.name.Contains("height")).value;
+                                fontSize = (int)SettingList.Find(x => x.name.Contains("fontSize")).value;
+                                
+                            }
+                            catch
+                            {
+                                LoadDefault();
+                            }
+                            
+                        }
+                        else
+                        {
+                            LoadDefault();
+                        }
                     }
                     else
                     {
-                        Debug.WriteLine("Empty");
-                        Newtonsoft.Json.Linq.JObject SettingJson = new(
-                            new Newtonsoft.Json.Linq.JProperty("name", "height"),
-                            new Newtonsoft.Json.Linq.JProperty("value", 60));
-
-                        JsonList.Add(SettingJson);
-                        Debug.WriteLine(SettingJson);
+                        JsonList.Add(new JObject(new JProperty("name", "height"), new JProperty("value", 60)));
+                        JsonList.Add(new JObject(new JProperty("name", "fontSize"), new JProperty("value", 2)));
+                        
                         using (FileWriter = File.CreateText(path))
                         {
                             Newtonsoft.Json.JsonSerializer Serializer = new();
                             Serializer.Serialize(FileWriter, JsonList);
                         }
-                        Debug.WriteLine("Hej!");
+                        FileWriter.Close();
+
                         SettingList.Add(new Setting() { name = "height", value = 60 });
-                        
+                        SettingList.Add(new Setting() { name = "fontSize", value = 2 });
+
                         height = SettingList.Find(x => x.name.Contains("height")).value;
-                        Debug.WriteLine("Height is set to: " + height);
+                        fontSize = SettingList.Find(x => x.name.Contains("fontSize")).value;
                     }
                 }
             }
         }
 
-        public static void SaveSettings(double height)
+        public static void SaveSettings()
         {
-            Newtonsoft.Json.Linq.JObject SettingJson_Height = new(
-                            new Newtonsoft.Json.Linq.JProperty("name", "height"),
-                            new Newtonsoft.Json.Linq.JProperty("value", height));
+            JObject SettingJson_Height = new(
+                new JProperty("name", "height"),
+                new JProperty("value", height));
+            JObject SettingJson_FontSize = new(
+                new JProperty("name", "fontSize"),
+                new JProperty("value", fontSize));
 
             JsonList.Clear();
             JsonList.Add(SettingJson_Height);
+            JsonList.Add(SettingJson_FontSize);
             using (FileWriter = File.CreateText(path))
             {
                 Newtonsoft.Json.JsonSerializer Serializer = new();
                 Serializer.Serialize(FileWriter, JsonList);
             }
+            FileWriter.Close();
+        }
+
+        public static void LoadDefault()
+        {
+            JsonList.Clear();
+            JsonList.Add(new JObject(new JProperty("name", "height"), new JProperty("value", 60)));
+            JsonList.Add(new JObject(new JProperty("name", "fontSize"), new JProperty("value", 2)));
+
+            SettingList.Clear();
+            SettingList.Add(new Setting() { name = "height", value = 60 });
+            SettingList.Add(new Setting() { name = "fontSize", value = 2 });
+
+            height = SettingList.Find(x => x.name.Contains("height")).value;
+            fontSize = SettingList.Find(x => x.name.Contains("fontSize")).value;
+
+            using (FileWriter = File.CreateText(path))
+            {
+                Newtonsoft.Json.JsonSerializer Serializer = new();
+                Serializer.Serialize(FileWriter, JsonList);
+            }
+            FileWriter.Close();
         }
 
     }

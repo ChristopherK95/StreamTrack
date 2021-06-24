@@ -41,6 +41,7 @@ namespace WpfApp1
         private List<Newtonsoft.Json.Linq.JObject> JsonList = new();
         List<RowDefinition> StreamerRowList = new();
         List<Image> ProfileImageList = new();
+        List<TextBlock> TitleTextList = new();
 
         private static double _height;
         public double height
@@ -316,12 +317,13 @@ namespace WpfApp1
 
                 TextBlock TitleContent = new()
                 {
-                    FontSize = 12,
+                    FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
                     FontFamily = new FontFamily("Arial Black"),
                     Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
+                TitleTextList.Add(TitleContent);
 
                 Label Title = new()
                 {
@@ -631,7 +633,7 @@ namespace WpfApp1
 
         private void Settings(object sender, RoutedEventArgs e)
         {
-            Settings settingsWindow = new(StreamerRowList, ProfileImageList, height);
+            Settings settingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList);
             settingsWindow.Show();
         }
     }
