@@ -155,7 +155,7 @@
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="MinHeight" Value="20"/>
-                <Setter Property="MinWidth" Value="200"/>
+                <Setter Property="MinWidth" Value="150"/>
                 <Setter Property="Template" Value="{StaticResource Slider}"/>
             </Trigger>
         </Style.Triggers>
@@ -197,4 +197,107 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ColorSliderRepeatButton" TargetType="RepeatButton">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border Background="Transparent" Width="20"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ColorSliderRepeatButton1" TargetType="RepeatButton">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border SnapsToDevicePixels="True" Background="Transparent"  Width="20"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ColorSliderThumb" TargetType="Thumb">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="Ellipse" Margin="0,0,0,0" Height="8" Width="30" BorderBrush="White" BorderThickness="2" Cursor="Hand"></Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Ellipse" Property="Background" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <VisualBrush x:Key="HueBrush" TileMode="None">
+        <VisualBrush.Visual>
+            <Canvas Background="Black" Width="1" Height="1" SnapsToDevicePixels="True">
+                <Rectangle Width="1" Height="1" SnapsToDevicePixels="True">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Color="#FF0000" Offset="0" />
+                                <GradientStop Color="#FF00FF" Offset="0.167" />
+                                <GradientStop Color="#0000FF" Offset="0.333" />
+                                <GradientStop Color="#00FFFF" Offset="0.5" />
+                                <GradientStop Color="#00FF00" Offset="0.667" />
+                                <GradientStop Color="#FFFF00" Offset="0.833" />
+                                <GradientStop Color="#FF0000" Offset="1" />
+                            </LinearGradientBrush.GradientStops>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Canvas>
+        </VisualBrush.Visual>
+    </VisualBrush>
+
+    <ControlTemplate x:Key="Slider2" TargetType="Slider">
+        <Grid Background="{StaticResource HueBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" MinWidth="{TemplateBinding MinWidth}"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Track Grid.Column="1" x:Name="PART_Track">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource ColorSliderRepeatButton1}" Command="Slider.DecreaseLarge"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource ColorSliderThumb}"/>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource ColorSliderRepeatButton}" Command="Slider.IncreaseLarge"/>
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+    </ControlTemplate>
+
+    <Style x:Key="ColorSlider" TargetType="Slider">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="MinHeight" Value="200"/>
+                <Setter Property="MinWidth" Value="20"/>
+                <Setter Property="Template" Value="{StaticResource Slider2}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    
+    
+    
+    
 </ResourceDictionary>

@@ -41,48 +41,134 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0"
-                   x:Name="HeightLabel"
-                   Content="Row height:"
-                   Foreground="White"
-                   FontSize="18"
-                   FontFamily="Consolas" 
-                   FontWeight="Bold"
-                   HorizontalContentAlignment="Center"/>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="180" Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <Slider Grid.Row="1"
-                    x:Name="HeightSlider"
-                    Width="200"
-                    HorizontalAlignment="Center"
-                    Value="60"
-                    Minimum="45"
-                    Maximum="100"
-                    TickPlacement="BottomRight"
-                    TickFrequency="5"
-                    IsSnapToTickEnabled="True"
-                    Style="{StaticResource SettingsSlider}"/>
+                <Label Grid.Column="0"
+                       x:Name="HeightLabel"
+                       Content="Row height:"
+                       Foreground="White"
+                       FontSize="18"
+                       FontFamily="Consolas" 
+                       FontWeight="Bold"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center"/>
 
-            <Label Grid.Row="2"
+                <Slider Grid.Column="1"
+                        x:Name="HeightSlider"
+                        Width="Auto"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Value="60"
+                        Minimum="45"
+                        Maximum="100"
+                        TickPlacement="BottomRight"
+                        TickFrequency="5"
+                        IsSnapToTickEnabled="True"
+                        Style="{StaticResource SettingsSlider}"/>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="180" Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0"
                    x:Name="FontSizeLabel"
                    Content="Font size:"
                    Foreground="White"
                    FontSize="18"
                    FontFamily="Consolas"
                    FontWeight="Bold"
-                   HorizontalContentAlignment="Center"/>
+                   HorizontalContentAlignment="Left"/>
 
-            <Slider Grid.Row="3"
-                    x:Name="FontSizeSlider"
-                    HorizontalAlignment="Center"
-                    Value="2"
-                    Minimum="1"
-                    Maximum="3"
-                    TickPlacement="BottomRight"
-                    TickFrequency="1"
-                    IsSnapToTickEnabled="True"
-                    Style="{StaticResource SettingsSlider}"/>
+                <Slider Grid.Column="1"
+                        x:Name="FontSizeSlider"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Value="2"
+                        Minimum="1"
+                        Maximum="3"
+                        TickPlacement="BottomRight"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Style="{StaticResource SettingsSlider}"/>
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0"
+                       Content="Color theme:"
+                       Foreground="White"
+                       FontSize="18"
+                       FontFamily="Consolas"
+                       FontWeight="Bold"
+                       HorizontalContentAlignment="Left"/>
+
+                <Border x:Name="ThemeColorPreview" Grid.Column="1"
+                        BorderThickness="2"
+                        BorderBrush="#FF7C7C7C"
+                        Background="#22272d"
+                        CornerRadius="5"
+                        Height="15"
+                        Width="50"
+                        HorizontalAlignment="Left"
+                        Cursor="Hand"
+                        MouseDown="Border_MouseDown"/>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0"
+                       Content="Font color:"
+                       Foreground="White"
+                       FontSize="18"
+                       FontFamily="Consolas"
+                       FontWeight="Bold"
+                       HorizontalContentAlignment="Left"/>
+
+                <Border x:Name="FontColorPreview" Grid.Column="1"
+                        BorderThickness="2"
+                        BorderBrush="#FF7C7C7C"
+                        Background="#22272d"
+                        CornerRadius="5"
+                        Height="15"
+                        Width="50"
+                        HorizontalAlignment="Left"
+                        Cursor="Hand"
+                        MouseDown="FontColorPicker"/>
+            </Grid>
         </Grid>
 
+        <Button x:Name="DefaultButton"
+                Grid.Row="2" 
+                Content="Default" 
+                FontSize="20" 
+                FontWeight="Bold" 
+                Padding="10, 3, 10, 3" 
+                HorizontalAlignment="Left" 
+                Margin="10, 0, 0, 10"
+                BorderThickness="0"
+                Foreground="White"
+                Click="Default"
+                Style="{StaticResource SaveButton}">
+            <Button.Effect>
+                <DropShadowEffect x:Name="DefaultButtonShadow" Color="Black" Direction="320" ShadowDepth="5"  Opacity="0.5"/>
+            </Button.Effect>
+        </Button>
+        
         <Button x:Name="SaveButton"
                 Grid.Row="2" 
                 Content="Save" 

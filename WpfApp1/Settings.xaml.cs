@@ -23,6 +23,8 @@ namespace WpfApp1
         public List<RowDefinition> rowDefinitions;
         public List<Image> images;
         List<TextBlock> titleTexts;
+        
+        private bool saved = false;
         public Settings(List<RowDefinition> rowDefinitions, List<Image> images, List<TextBlock> titleTexts)
         {
             this.rowDefinitions = rowDefinitions;
@@ -38,6 +40,9 @@ namespace WpfApp1
             FontSizeSlider.Value = SettingsVariables.fontSize;
             FontSizeLabel.Content = "Row height: " + SettingsVariables.fontSize;
             FontSizeSlider.ValueChanged += FontSizeChanged;
+
+            ThemeColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.themeColor));
+            FontColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.fontColor));
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -51,6 +56,16 @@ namespace WpfApp1
         private void Exit(object sender, RoutedEventArgs e)
         {
             Close();
+            if (saved)
+            {
+                SettingsVariables.SaveSettings();
+            }
+            else
+            {
+                SettingsVariables.LoadSettings();
+                Functions.PaintUI("themeColor");
+                Functions.PaintUI("fontColor");
+            }
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -112,9 +127,29 @@ namespace WpfApp1
 
         private void Save(object sender, RoutedEventArgs e)
         {
-            SettingsVariables.SaveSettings();
+            saved = true;
             SaveButtonShadow.ShadowDepth = 2;
             SaveButton.IsEnabled = false;
+        }
+
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ColorPalette colorPalette = new(ThemeColorPreview);
+            colorPalette.Show();
+            saved = false;
+        }
+
+        private void Default(object sender, RoutedEventArgs e)
+        {
+            SettingsVariables.LoadDefault();
+            Functions.PaintUI("themeColor");
+            Functions.PaintUI("fontColor");
+        }
+
+        private void FontColorPicker(object sender, MouseButtonEventArgs e)
+        {
+            ColorPalette colorPalette = new(FontColorPreview);
+            colorPalette.Show();
         }
     }
 }

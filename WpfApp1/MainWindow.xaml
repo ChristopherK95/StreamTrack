@@ -4,11 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
-        xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="StreamTrack" Height="500" Width="400"
         MinWidth="400" MinHeight="500"
-        Background="#22272d" WindowStyle="None" ResizeMode="CanResize">
+        Background="#22272d" WindowStyle="None" ResizeMode="CanResize" x:Name="StreamTrackWindow">
 
     <WindowChrome.WindowChrome>
         <WindowChrome ResizeBorderThickness="4" CaptionHeight="0"/>
@@ -115,7 +114,7 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Column="0" Content="StreamTrack" FontSize="15" FontFamily="Arial Black" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown" FontWeight="Normal"/>
+            <Label x:Name="TitleLabel" Grid.Column="0" Content="StreamTrack" FontSize="15" FontFamily="Arial Black" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown" FontWeight="Normal"/>
             <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent"/>
             <Button Style="{StaticResource SettingsButton}" Grid.Column="2" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="0" Click="Settings">
                 <fa:ImageAwesome Icon="Cog" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
@@ -127,7 +126,8 @@
         </Grid>
 
         <StackPanel Grid.Row="1"
-                        Background="#2b2d3b" >
+                    Background="#2b2d3b"
+                    x:Name="MiscBar">
             <Grid HorizontalAlignment="Stretch" Height="40">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
@@ -193,8 +193,24 @@
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Grid.Row="2">
-            <StackPanel x:Name="StreamerPanel">
-            </StackPanel>
+            <Grid x:Name="StreamerPanel">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Live" 
+                       Foreground="White" FontSize="16" 
+                       FontWeight="DemiBold" Padding="5,0,0,0" 
+                       VerticalContentAlignment="Center" Background="#FF161A1F"/>
+
+                <Label Grid.Row="2" Content="Offline" 
+                       Foreground="White" FontSize="16" 
+                       FontWeight="DemiBold" Padding="5,0,0,0" 
+                       VerticalContentAlignment="Center" Background="#FF161A1F"/>
+            </Grid>
         </ScrollViewer>
 
 
