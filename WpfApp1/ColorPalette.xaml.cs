@@ -23,10 +23,12 @@ namespace WpfApp1
         private Ellipse colorMarker;
         dynamic renderTargetBitmap;
         Border ColorPreview;
-        public ColorPalette(Border ColorPreview)
+        Label TextPreview;
+        public ColorPalette(Border ColorPreview, Label TextPreview)
         {
             InitializeComponent();
             this.ColorPreview = ColorPreview;
+            this.TextPreview = TextPreview;
         }
 
         public LinearGradientBrush Draw()
@@ -83,9 +85,11 @@ namespace WpfApp1
                 colorMarker.Fill = new SolidColorBrush(Color.FromRgb(pixels[2], pixels[1], pixels[0]));
                 ColorPreview.Background = new SolidColorBrush(Color.FromRgb(pixels[2], pixels[1], pixels[0]));
 
+
                 if (ColorPreview.Name == "ThemeColorPreview")
                 {
                     SettingsVariables.themeColor = $"#{pixels[2]:X2}{pixels[1]:X2}{pixels[0]:X2}";
+                    TextPreview.Content = SettingsVariables.themeColor;
                     if (pixels[2] <= 235 && pixels[1] <= 235 && pixels[0] <= 235)
                     {
                         pixels[2] += 20;
@@ -98,6 +102,7 @@ namespace WpfApp1
                 else if(ColorPreview.Name == "FontColorPreview")
                 {
                     SettingsVariables.fontColor = $"#{pixels[2]:X2}{pixels[1]:X2}{pixels[0]:X2}";
+                    TextPreview.Content = SettingsVariables.fontColor;
                     if (pixels[2] >= 50 && pixels[1] >= 50 && pixels[0] >= 50)
                     {
                         pixels[2] -= 50;
@@ -132,6 +137,7 @@ namespace WpfApp1
                     if (ColorPreview.Name == "ThemeColorPreview")
                     {
                         SettingsVariables.themeColor = $"#{pixels[2]:X2}{pixels[1]:X2}{pixels[0]:X2}";
+                        TextPreview.Content = SettingsVariables.themeColor;
                         if (pixels[2] <= 235 && pixels[1] <= 235 && pixels[0] <= 235)
                         {
                             pixels[2] += 20;
@@ -144,6 +150,7 @@ namespace WpfApp1
                     else if (ColorPreview.Name == "FontColorPreview")
                     {
                         SettingsVariables.fontColor = $"#{pixels[2]:X2}{pixels[1]:X2}{pixels[0]:X2}";
+                        TextPreview.Content = SettingsVariables.fontColor;
                         if (pixels[2] >= 50 && pixels[1] >= 50 && pixels[0] >= 50)
                         {
                             pixels[2] -= 50;
@@ -199,6 +206,7 @@ namespace WpfApp1
             if (ColorPreview.Name == "ThemeColorPreview")
             {
                 SettingsVariables.themeColor = $"#{pixels[2]:X2}{pixels[1]:X2}{pixels[0]:X2}";
+                TextPreview.Content = SettingsVariables.themeColor;
                 if (pixels[2] <= 235 && pixels[1] <= 235 && pixels[0] <= 235)
                 {
                     pixels[2] += 20;
@@ -211,6 +219,7 @@ namespace WpfApp1
             else if (ColorPreview.Name == "FontColorPreview")
             {
                 SettingsVariables.fontColor = $"#{pixels[2]:X2}{pixels[1]:X2}{pixels[0]:X2}";
+                TextPreview.Content = SettingsVariables.fontColor;
                 if (pixels[2] >= 50 && pixels[1] >= 50 && pixels[0] >= 50)
                 {
                     pixels[2] -= 50;

@@ -23,7 +23,7 @@
                         MouseDown="StackPanel_MouseDown"
                         HorizontalAlignment="Stretch"
                         Background="Transparent">
-                <Label Content="Settings" Foreground="White" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0"/>
+                <Label Content="Settings" Foreground="White" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" VerticalContentAlignment="Center"/>
             </StackPanel>
 
             <Button Style="{StaticResource ExitButton}"
@@ -102,6 +102,7 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
@@ -117,17 +118,28 @@
                         BorderThickness="2"
                         BorderBrush="#FF7C7C7C"
                         Background="#22272d"
-                        CornerRadius="5"
-                        Height="15"
+                        CornerRadius="4"
+                        Height="20"
                         Width="50"
+                        Margin="0,0,10,0"
                         HorizontalAlignment="Left"
                         Cursor="Hand"
-                        MouseDown="Border_MouseDown"/>
+                        MouseDown="Border_MouseDown">
+
+                    
+                </Border>
+
+                <Label x:Name="ThemeColorTextPreview" Grid.Column="2"
+                       Content="#FFFFFF" Foreground="White"
+                       Padding="0" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left" FontSize="14"
+                       FontWeight="DemiBold"/>
             </Grid>
 
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
@@ -143,12 +155,19 @@
                         BorderThickness="2"
                         BorderBrush="#FF7C7C7C"
                         Background="#22272d"
-                        CornerRadius="5"
-                        Height="15"
+                        CornerRadius="4"
+                        Height="20"
                         Width="50"
+                        Margin="0,0,10,0"
                         HorizontalAlignment="Left"
                         Cursor="Hand"
                         MouseDown="FontColorPicker"/>
+
+                <Label x:Name="FontColorTextPreview" Grid.Column="2"
+                       Content="#FFFFFF" Foreground="White"
+                       Padding="0" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left" FontSize="14"
+                       FontWeight="DemiBold"/>
             </Grid>
         </Grid>
 

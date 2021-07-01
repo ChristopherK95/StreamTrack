@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:WpfApp1" xmlns:fa="http://schemas.fontawesome.io/icons/"
-        Title="ColorPalette" Width="400" Height="300" BorderThickness="0" BorderBrush="#22272d" Background="#FF373E46" WindowStyle="None" ResizeMode="NoResize">
+        Title="ColorPalette" Width="400" Height="300" BorderThickness="0" BorderBrush="#22272d" Background="#1c2026" WindowStyle="None" ResizeMode="NoResize">
     <Window.Resources>
         <Color x:Key="CurrentColor" A="255" R="0" G="255" B="0"></Color>
 
@@ -58,12 +58,12 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
 
-        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="#FF4E5761">
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="#22272d">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>

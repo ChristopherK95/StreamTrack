@@ -114,7 +114,7 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
-            <Label x:Name="TitleLabel" Grid.Column="0" Content="StreamTrack" FontSize="15" FontFamily="Arial Black" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown" FontWeight="Normal"/>
+            <Label x:Name="TitleLabel" Grid.Column="0" Content="StreamTrack" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown"/>
             <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent"/>
             <Button Style="{StaticResource SettingsButton}" Grid.Column="2" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="0" Click="Settings">
                 <fa:ImageAwesome Icon="Cog" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>

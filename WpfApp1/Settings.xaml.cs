@@ -43,6 +43,9 @@ namespace WpfApp1
 
             ThemeColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.themeColor));
             FontColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.fontColor));
+
+            ThemeColorTextPreview.Content = SettingsVariables.themeColor;
+            FontColorTextPreview.Content = SettingsVariables.fontColor;
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -134,7 +137,7 @@ namespace WpfApp1
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            ColorPalette colorPalette = new(ThemeColorPreview);
+            ColorPalette colorPalette = new(ThemeColorPreview, ThemeColorTextPreview);
             colorPalette.Show();
             saved = false;
         }
@@ -148,7 +151,7 @@ namespace WpfApp1
 
         private void FontColorPicker(object sender, MouseButtonEventArgs e)
         {
-            ColorPalette colorPalette = new(FontColorPreview);
+            ColorPalette colorPalette = new(FontColorPreview, FontColorTextPreview);
             colorPalette.Show();
         }
     }

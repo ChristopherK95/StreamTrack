@@ -12,10 +12,10 @@ namespace WpfApp1
 
         public static double height;
         public static int fontSize;
-        public static string themeColor = "#1c2026";
-        public static string themeColor2 = "#30343a";
-        public static string fontColor = "#ffffff";
-        public static string fontColor2 = "#cdcdcd";
+        public static string themeColor;
+        public static string themeColor2;
+        public static string fontColor;
+        public static string fontColor2;
 
         static string path;
         private static StreamWriter FileWriter;
@@ -42,14 +42,15 @@ namespace WpfApp1
                     if (jsonString != "")
                     {
                         SettingList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Setting>>(jsonString);
-
-                        if(SettingList.Count == 2)
+                        Debug.WriteLine("String is not empty");
+                        if(SettingList.Count == 6)
                         {
                             LoadSettings();
                             
                         }
                         else
                         {
+                            Debug.WriteLine("Else");
                             LoadDefault();
                         }
                     }
@@ -59,7 +60,7 @@ namespace WpfApp1
                         JsonList.Add(new JObject(new JProperty("name", "fontSize"), new JProperty("value", 2)));
                         JsonList.Add(new JObject(new JProperty("name", "themeColor"), new JProperty("value", "#1c2026")));
                         JsonList.Add(new JObject(new JProperty("name", "themeColor2"), new JProperty("value", "#30343a")));
-                        JsonList.Add(new JObject(new JProperty("name", "fontColor"), new JProperty("value", "#FFFFFF")));
+                        JsonList.Add(new JObject(new JProperty("name", "fontColor"), new JProperty("value", "#ffffff")));
                         JsonList.Add(new JObject(new JProperty("name", "fontColor2"), new JProperty("value", "#cdcdcd")));
 
                         using (FileWriter = File.CreateText(path))
@@ -73,14 +74,14 @@ namespace WpfApp1
                         SettingList.Add(new Setting() { name = "fontSize", value = 2 });
                         SettingList.Add(new Setting() { name = "themeColor", value = "#1c2026" });
                         SettingList.Add(new Setting() { name = "themeColor2", value = "#30343a" });
-                        SettingList.Add(new Setting() { name = "fontColor", value = "#FFFFFF" });
+                        SettingList.Add(new Setting() { name = "fontColor", value = "#ffffff" });
                         SettingList.Add(new Setting() { name = "fontColor2", value = "#cdcdcd" });
 
                         height = 60;
                         fontSize = 2;
                         themeColor = "#1c2026";
                         themeColor2 = "#30343a";
-                        fontColor = "#FFFFFF";
+                        fontColor = "#ffffff";
                         fontColor2 = "#cdcdcd";
                     }
                 }
@@ -114,6 +115,7 @@ namespace WpfApp1
                 SettingList.Find(x => x.name.Contains("fontColor")) != null &&
                 SettingList.Find(x => x.name.Contains("fontColor2")) != null)
             {
+                Debug.WriteLine("True");
                 height = SettingList.Find(x => x.name.Contains("height")).value;
                 fontSize = (int)SettingList.Find(x => x.name.Contains("fontSize")).value;
                 themeColor = SettingList.Find(x => x.name.Contains("themeColor")).value;
@@ -123,6 +125,7 @@ namespace WpfApp1
             }
             else
             {
+                Debug.WriteLine("False");
                 LoadDefault();
             }
         }
@@ -134,7 +137,7 @@ namespace WpfApp1
             JsonList.Add(new JObject(new JProperty("name", "fontSize"), new JProperty("value", 2)));
             JsonList.Add(new JObject(new JProperty("name", "themeColor"), new JProperty("value", "#1c2026")));
             JsonList.Add(new JObject(new JProperty("name", "themeColor2"), new JProperty("value", "#30343a")));
-            JsonList.Add(new JObject(new JProperty("name", "fontColor"), new JProperty("value", "#FFFFFF")));
+            JsonList.Add(new JObject(new JProperty("name", "fontColor"), new JProperty("value", "#ffffff")));
             JsonList.Add(new JObject(new JProperty("name", "fontColor2"), new JProperty("value", "#cdcdcd")));
 
             SettingList.Clear();
@@ -142,14 +145,14 @@ namespace WpfApp1
             SettingList.Add(new Setting() { name = "fontSize", value = 2 });
             SettingList.Add(new Setting() { name = "themeColor", value = "#1c2026" });
             SettingList.Add(new Setting() { name = "themeColor2", value = "#30343a" });
-            SettingList.Add(new Setting() { name = "fontColor", value = "#FFFFFF" });
+            SettingList.Add(new Setting() { name = "fontColor", value = "#ffffff" });
             SettingList.Add(new Setting() { name = "fontColor2", value = "#cdcdcd" });
 
             height = 60;
             fontSize = 2;
             themeColor = "#1c2026";
             themeColor2 = "#30343a";
-            fontColor = "#FFFFFF";
+            fontColor = "#ffffff";
             fontColor2 = "#cdcdcd";
 
             using (FileWriter = File.CreateText(path))
