@@ -25,6 +25,10 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
+        // Bools.
+        bool SettingsOpen = false;
+        bool NotificationsOpen = false;
+
         // Brushes.
         readonly SolidColorBrush IconWhite = new(Colors.White);
         readonly SolidColorBrush IconGray = new(Colors.Gray);
@@ -164,7 +168,6 @@ namespace WpfApp1
                 RefreshIcon.Spin = true;
                 RefreshAnimation.Start();
                 RecentStreamers = Streamers.ToList();
-                //LoadStreamers();
                 UpdateStreamerUI();
                 increment = 0;
             };
@@ -186,16 +189,13 @@ namespace WpfApp1
                 Streamer Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(StreamerString);
                 Streamers.Add(Streamer);
             }
-
+            
             List<List<Streamer>> offset = GetStatusChange();
 
             if(offset != null)
             {
                 List<Streamer> offline = offset[0];
                 List<Streamer> online = offset[1];
-
-                Debug.WriteLine(offline.Count);
-                Debug.WriteLine(online.Count);
 
                 for (int i = 0; i < offline.Count; i++)
                 {
@@ -206,18 +206,18 @@ namespace WpfApp1
                         if(offline[i].user_name == (PanelList[j].Children[0] as WrapPanel).Children[0].GetValue(ContentProperty).ToString())
                         {
                             ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome.WPF.FontAwesome).Foreground = OfflineBrush;
-                            ((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content = "";
-
-                            RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == offline[i].user_name);
+                            (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = "";
+                            
+                            //RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == offline[i].user_name);
                             StackPanel p = RowPanel.Find(panel => (string)panel.Tag == offline[i].user_name);
 
-                            StreamerGrid.RowDefinitions.Remove(r);
+                            //StreamerGrid.RowDefinitions.Remove(r);
                             StreamerGrid.Children.Remove(p);
 
-                            OfflineGrid.RowDefinitions.Add(r);
+                            //OfflineGrid.RowDefinitions.Add(r);
                             OfflineGrid.Children.Add(p);
 
-                            Grid.SetRow(p, OfflineGrid.RowDefinitions.Count);
+                            //Grid.SetRow(p, OfflineGrid.RowDefinitions.Count);
 
                             break;
                         }
@@ -233,22 +233,47 @@ namespace WpfApp1
                             ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome.WPF.FontAwesome).Foreground = LiveBrush;
                             (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = online[i].title;
 
-
-                            RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == online[i].user_name);
+                            //RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == online[i].user_name);
                             StackPanel p = RowPanel.Find(panel => (string)panel.Tag == online[i].user_name);
 
-                            OfflineGrid.RowDefinitions.Remove(r);
+                            //OfflineGrid.RowDefinitions.Remove(r);
+                            Debug.WriteLine(OfflineGrid.Children.Count);
                             OfflineGrid.Children.Remove(p);
-                            
-                            StreamerGrid.RowDefinitions.Add(r);
-                            StreamerGrid.Children.Add(p);
+                            Debug.WriteLine(OfflineGrid.Children.Count);
 
-                            Grid.SetRow(p, StreamerGrid.RowDefinitions.Count);
+                            //StreamerGrid.RowDefinitions.Add(r);
+                            Debug.WriteLine(StreamerGrid.Children.Count);
+                            StreamerGrid.Children.Add(p);
+                            Debug.WriteLine(StreamerGrid.Children.Count);
+
+                            //Grid.SetRow(p, StreamerGrid.RowDefinitions.Count);
 
                             break;
                         }
                     }
                 }
+
+                ReOrder();
+            }
+        }
+
+        public void ReOrder()
+        {
+            StreamerGrid.RowDefinitions.Clear();
+            OfflineGrid.RowDefinitions.Clear();
+            for(int i = 0; i < StreamerGrid.Children.Count; i++)
+            {
+                RowDefinition r = new();
+                StreamerGrid.RowDefinitions.Add(r);
+                Grid.SetRow(StreamerGrid.Children[i], i);
+                StreamerGrid.Children[i].SetValue(BackgroundProperty, i % 2 == 0 ? new SolidColorBrush(SetColor(SettingsVariables.themeColor)) : new SolidColorBrush(SetColor(SettingsVariables.themeColor2)));
+            }
+            for (int i = 0; i < OfflineGrid.Children.Count; i++)
+            {
+                RowDefinition r = new();
+                OfflineGrid.RowDefinitions.Add(r);
+                Grid.SetRow(OfflineGrid.Children[i], i);
+                OfflineGrid.Children[i].SetValue(BackgroundProperty, i % 2 == 0 ? new SolidColorBrush(SetColor(SettingsVariables.themeColor)) : new SolidColorBrush(SetColor(SettingsVariables.themeColor2)));
             }
         }
 
@@ -321,11 +346,13 @@ namespace WpfApp1
                 {
                     // Creates a notification of the streamer that went offline.
                     Notification(offline[i].user_name, "");
+                    Notifications.AddNotifs(offline[i].user_name, "Offline");
                 }
                 for (int i = 0; i < online.Count; i++)
                 {
                     // Creates a notification of the streamer that went live.
                     Notification(online[i].user_name, "live");
+                    Notifications.AddNotifs(online[i].user_name, "Live");
                 }
                 NotificationTimer.Start();
                 List<List<Streamer>> offset = new();
@@ -411,6 +438,7 @@ namespace WpfApp1
 
                 TextBlock TitleContent = new()
                 {
+                    Text = "",
                     FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
                     FontFamily = new FontFamily("Arial Black"),
                     Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2)),
@@ -435,7 +463,6 @@ namespace WpfApp1
                         TitleContent.Text = Streamers[j].title;
                         TitleContent.ToolTip = Streamers[j].title;
                         Live.Foreground = LiveBrush;
-                        StreamerRow.Tag = "live";
                     }
                 }
                 
@@ -468,7 +495,7 @@ namespace WpfApp1
                 RowColumns.Children.Add(Rows);
                 Grid.SetColumn(Rows, 1);
 
-                if(StreamerRow.Tag != null && StreamerRow.Tag.ToString() == "live")
+                if(TitleContent.Text != "")
                 {
                     StreamerGrid.Children.Add(StreamerRowPanel);
                     Grid.SetRow(StreamerRowPanel, StreamerGrid.RowDefinitions.Count);
@@ -737,8 +764,22 @@ namespace WpfApp1
 
         private void Settings(object sender, RoutedEventArgs e)
         {
-            Settings settingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList);
-            settingsWindow.Show();
+            if(IsOpened.SettingsIsOpen == false)
+            {
+                IsOpened.SettingsIsOpen = true;
+                Settings SettingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList);
+                SettingsWindow.Show();
+            }
+        }
+
+        private void NotifHistory(object sender, RoutedEventArgs e)
+        {
+            if(IsOpened.NotifsIsOpen == false)
+            {
+                IsOpened.NotifsIsOpen = true;
+                NotifHistory NotificationsWindow = new();
+                NotificationsWindow.Show();
+            }
         }
     }
 }

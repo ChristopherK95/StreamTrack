@@ -58,7 +58,8 @@ namespace WpfApp1
 
         private void Exit(object sender, RoutedEventArgs e)
         {
-            Close();
+            IsOpened.SettingsIsOpen = false;
+            
             if (saved)
             {
                 SettingsVariables.SaveSettings();
@@ -69,6 +70,8 @@ namespace WpfApp1
                 Functions.PaintUI("themeColor");
                 Functions.PaintUI("fontColor");
             }
+
+            Close();
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
