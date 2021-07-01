@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -25,6 +28,8 @@ namespace WpfApp1
         // Brushes.
         readonly SolidColorBrush IconWhite = new(Colors.White);
         readonly SolidColorBrush IconGray = new(Colors.Gray);
+        readonly SolidColorBrush LiveBrush = new(Color.FromRgb(233, 25, 22));
+        readonly SolidColorBrush OfflineBrush = new(Color.FromRgb(87, 87, 87));
 
         // Strings.
         private string path;
@@ -36,17 +41,22 @@ namespace WpfApp1
         private List<StreamerSearchResult> SearchResults = new();
         private List<SavedStreamer> SavedStreamers = new();
         private List<Newtonsoft.Json.Linq.JObject> JsonList = new();
+        List<RowDefinition> StreamerRowList = new();
+        List<Image> ProfileImageList = new();
+        List<TextBlock> TitleTextList = new();
+        List<Grid> PanelList = new();
+        List<StackPanel> RowPanel = new();
 
         public int increment = 0;
 
         HttpClient httpClient = new();
         private delegate void Load_result_panels_callback(int i);
         Grid StreamerGrid;
+        Grid OfflineGrid;
         StreamWriter FileWriter;
         DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
         DispatcherTimer NotificationTimer = new();
-
         public MainWindow()
         {
             InitializeComponent();
@@ -64,6 +74,9 @@ namespace WpfApp1
 
             NotificationTimer.Interval = TimeSpan.FromSeconds(3);
             NotificationTimer.Tick += NotifTicker;
+
+            TitleLabel.Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
+            StreamTrackWindow.Background = new SolidColorBrush(SetColor(SettingsVariables.themeColor));
         }
 
         public void Notification(string streamer, string status)
@@ -151,9 +164,92 @@ namespace WpfApp1
                 RefreshIcon.Spin = true;
                 RefreshAnimation.Start();
                 RecentStreamers = Streamers.ToList();
-                LoadStreamers();
+                //LoadStreamers();
+                UpdateStreamerUI();
                 increment = 0;
             };
+        }
+
+        public async void UpdateStreamerUI()
+        {
+            dynamic FetchedData = await GetStreamerStatus();
+            dynamic ObjectData = Newtonsoft.Json.JsonConvert.DeserializeObject(FetchedData);
+            dynamic LiveStreamers = ObjectData["data"];
+
+            if (Streamers.Count > 0)
+            {
+                Streamers.Clear();
+            }
+            foreach (dynamic s in LiveStreamers)
+            {
+                string StreamerString = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+                Streamer Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(StreamerString);
+                Streamers.Add(Streamer);
+            }
+
+            List<List<Streamer>> offset = GetStatusChange();
+
+            if(offset != null)
+            {
+                List<Streamer> offline = offset[0];
+                List<Streamer> online = offset[1];
+
+                Debug.WriteLine(offline.Count);
+                Debug.WriteLine(online.Count);
+
+                for (int i = 0; i < offline.Count; i++)
+                {
+                    // Creates a notification of the streamer that went offline.
+                    for(int j = 0; j < PanelList.Count; j++)
+                    {
+                        
+                        if(offline[i].user_name == (PanelList[j].Children[0] as WrapPanel).Children[0].GetValue(ContentProperty).ToString())
+                        {
+                            ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome.WPF.FontAwesome).Foreground = OfflineBrush;
+                            ((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content = "";
+
+                            RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == offline[i].user_name);
+                            StackPanel p = RowPanel.Find(panel => (string)panel.Tag == offline[i].user_name);
+
+                            StreamerGrid.RowDefinitions.Remove(r);
+                            StreamerGrid.Children.Remove(p);
+
+                            OfflineGrid.RowDefinitions.Add(r);
+                            OfflineGrid.Children.Add(p);
+
+                            Grid.SetRow(p, OfflineGrid.RowDefinitions.Count);
+
+                            break;
+                        }
+                    }
+                }
+                for (int i = 0; i < online.Count; i++)
+                {
+                    // Creates a notification of the streamer that went live.
+                    for (int j = 0; j < PanelList.Count; j++)
+                    {
+                        if (online[i].user_name == (PanelList[j].Children[0] as WrapPanel).Children[0].GetValue(ContentProperty).ToString())
+                        {
+                            ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome.WPF.FontAwesome).Foreground = LiveBrush;
+                            (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = online[i].title;
+
+
+                            RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == online[i].user_name);
+                            StackPanel p = RowPanel.Find(panel => (string)panel.Tag == online[i].user_name);
+
+                            OfflineGrid.RowDefinitions.Remove(r);
+                            OfflineGrid.Children.Remove(p);
+                            
+                            StreamerGrid.RowDefinitions.Add(r);
+                            StreamerGrid.Children.Add(p);
+
+                            Grid.SetRow(p, StreamerGrid.RowDefinitions.Count);
+
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public async void StartupStreamerData()
@@ -214,6 +310,37 @@ namespace WpfApp1
             return await am.ReadToEndAsync();
         }
 
+        public List<List<Streamer>> GetStatusChange()
+        {
+            if (RecentStreamers.Count > 0 && !RecentStreamers.SequenceEqual(Streamers))
+            {
+                List<Streamer> offline = RecentStreamers.Except(Streamers).ToList();
+                List<Streamer> online = Streamers.Except(RecentStreamers).ToList();
+
+                for (int i = 0; i < offline.Count; i++)
+                {
+                    // Creates a notification of the streamer that went offline.
+                    Notification(offline[i].user_name, "");
+                }
+                for (int i = 0; i < online.Count; i++)
+                {
+                    // Creates a notification of the streamer that went live.
+                    Notification(online[i].user_name, "live");
+                }
+                NotificationTimer.Start();
+                List<List<Streamer>> offset = new();
+                
+                offset.Add(offline);
+                offset.Add(online);
+                return offset;
+            }
+            else
+            {
+                return null;
+            }
+            
+        }
+
         // Loads all saved streamers from the save file and checks their live status, then renders them on the grid.
         public async void LoadStreamers()
         {
@@ -231,51 +358,34 @@ namespace WpfApp1
                 Streamer Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(StreamerString);
                 Streamers.Add(Streamer);
             }
-            
-            // Checks if there is any streamer(s) that have gone live and/or offline.
-            if(RecentStreamers.Count > 0 && !RecentStreamers.SequenceEqual(Streamers))
-            {
-                dynamic offline = RecentStreamers.Except(Streamers).ToList();
-                dynamic online = Streamers.Except(RecentStreamers).ToList();
-
-                for(int i = 0; i < offline.Count; i++)
-                {
-                    // Creates a notification of the streamer that went offline.
-                    Notification(offline[i].user_name, "");
-                }
-                for (int i = 0; i < online.Count; i++)
-                {
-                    // Creates a notification of the streamer that went live.
-                    Notification(online[i].user_name, "live");
-                }
-                NotificationTimer.Start();
-            }
-
-            StreamerPanel.Children.Clear();
 
             StreamerGrid = new() { Name = "StreamerGrid", Height = Double.NaN, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Stretch };
+            OfflineGrid = new() { Name = "OfflineGrid", HorizontalAlignment = HorizontalAlignment.Stretch };
+
             for (int i = 0; i < SavedStreamers.Count; i++)
             {
-                RowDefinition StreamerRow = new() { Height = new GridLength(60) };
+                Debug.WriteLine(SavedStreamers[i].name);
+                RowDefinition StreamerRow = new() { Height = new GridLength(SettingsVariables.height), Tag = SavedStreamers[i].name };
+                StreamerRowList.Add(StreamerRow);
+
                 Grid RowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
                 ColumnDefinition ImgCol = new() { Width = GridLength.Auto };
                 ColumnDefinition NameCol = new();
                 RowColumns.ColumnDefinitions.Add(ImgCol);
                 RowColumns.ColumnDefinitions.Add(NameCol);
-
-                StackPanel StreamerRowPanel = new();
+                StackPanel StreamerRowPanel = new() { Tag = SavedStreamers[i].name };
+                RowPanel.Add(StreamerRowPanel);
                 StreamerRowPanel.Children.Add(RowColumns);
-
-                StreamerGrid.Children.Add(StreamerRowPanel);
-                Grid.SetRow(StreamerRowPanel, i);
 
                 Image ProfileImg = new()
                 {
-                    Width = 60,
-                    Height = 60,
+                    Width = SettingsVariables.height,
+                    Height = SettingsVariables.height,
                     HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Center,
                     Source = new BitmapImage(new Uri(SavedStreamers[i].thumbnail_url)) { DecodePixelHeight = 60, DecodePixelWidth = 60 }
                 };
+                ProfileImageList.Add(ProfileImg);
                 RowColumns.Children.Add(ProfileImg);
                 Grid.SetColumn(ProfileImg, 0);
 
@@ -284,7 +394,7 @@ namespace WpfApp1
                     Content = SavedStreamers[i].name,
                     FontSize = 20,
                     FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush(Colors.White),
+                    Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor)),
                     Width = double.NaN,
                     Padding = new Thickness(5, 2, 0, 0)
                 };
@@ -293,7 +403,7 @@ namespace WpfApp1
                 {
                     Icon = FontAwesome.WPF.FontAwesomeIcon.Circle,
                     FontSize = 12,
-                    Foreground = new SolidColorBrush(Color.FromRgb(87, 87, 87)),
+                    Foreground = OfflineBrush,
                     Width = 20,
                     Margin = new Thickness(0, 10, 0, 0),
                     ToolTip = "Live"
@@ -301,12 +411,13 @@ namespace WpfApp1
 
                 TextBlock TitleContent = new()
                 {
-                    FontSize = 12,
+                    FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
                     FontFamily = new FontFamily("Arial Black"),
-                    Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                    Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2)),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
+                TitleTextList.Add(TitleContent);
 
                 Label Title = new()
                 {
@@ -323,14 +434,15 @@ namespace WpfApp1
                     {
                         TitleContent.Text = Streamers[j].title;
                         TitleContent.ToolTip = Streamers[j].title;
-                        Live.Foreground = new SolidColorBrush(Color.FromRgb(233, 25, 22));
+                        Live.Foreground = LiveBrush;
                         StreamerRow.Tag = "live";
                     }
                 }
                 
                 Grid Rows = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
-                RowDefinition UpperRow = new() { Height = new GridLength(30) };
-                RowDefinition LowerRow = new() { Height = new GridLength(30) };
+                PanelList.Add(Rows);
+                RowDefinition UpperRow = new() ;
+                RowDefinition LowerRow = new() ;
                 Rows.RowDefinitions.Add(UpperRow);
                 Rows.RowDefinitions.Add(LowerRow);
 
@@ -356,32 +468,41 @@ namespace WpfApp1
                 RowColumns.Children.Add(Rows);
                 Grid.SetColumn(Rows, 1);
 
-                StreamerGrid.RowDefinitions.Add(StreamerRow);
-            }
-            int order = 0;
-            for (int i = 0; i < SavedStreamers.Count; i++)
-            {
-                if (StreamerGrid.RowDefinitions[i].Tag != null && StreamerGrid.RowDefinitions[i].Tag.ToString() == "live")
+                if(StreamerRow.Tag != null && StreamerRow.Tag.ToString() == "live")
                 {
-                    Grid.SetRow(StreamerGrid.Children[i], order);
-                    order++;
+                    StreamerGrid.Children.Add(StreamerRowPanel);
+                    Grid.SetRow(StreamerRowPanel, StreamerGrid.RowDefinitions.Count);
+                    StreamerGrid.RowDefinitions.Add(StreamerRow);
                 }
-            }
-            for(int i = 0; i < SavedStreamers.Count; i++)
-            {
-                if (StreamerGrid.RowDefinitions[i].Tag == null)
+                else
                 {
-                    Grid.SetRow(StreamerGrid.Children[i], order);
-                    order++;
+                    OfflineGrid.Children.Add(StreamerRowPanel);
+                    Grid.SetRow(StreamerRowPanel, OfflineGrid.RowDefinitions.Count);
+                    OfflineGrid.RowDefinitions.Add(StreamerRow);
                 }
             }
 
-            for(int i = 0; i < StreamerGrid.Children.Count; i++)
+            for (int i = 0; i < StreamerGrid.Children.Count; i++)
             {
-                StreamerGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(StreamerGrid.Children[i]) % 2 == 0 ? Color.FromRgb(28, 32, 38) : Color.FromRgb(43, 47, 54)));
+                StreamerGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(StreamerGrid.Children[i]) % 2 == 0 ? SetColor(SettingsVariables.themeColor) : SetColor(SettingsVariables.themeColor2)));
+            }
+            for (int i = 0; i < OfflineGrid.Children.Count; i++)
+            {
+                OfflineGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(OfflineGrid.Children[i]) % 2 == 0 ? SetColor(SettingsVariables.themeColor) : SetColor(SettingsVariables.themeColor2)));
             }
 
             StreamerPanel.Children.Add(StreamerGrid);
+            Grid.SetRow(StreamerGrid, 1);
+            StreamerPanel.Children.Add(OfflineGrid);
+            Grid.SetRow(OfflineGrid, 3);
+
+            Functions.LoadElements(StreamTrackWindow, StreamerGrid, OfflineGrid, TitleLabel);
+        }
+
+        public Color SetColor(string hexColor)
+        {
+            Color color = (Color)ColorConverter.ConvertFromString(hexColor);
+            return color;
         }
 
         public void LoadTwitchKey()
@@ -611,6 +732,13 @@ namespace WpfApp1
         private void RefreshIcon_MouseDown(object sender, MouseButtonEventArgs e)
         {
             
+        }
+
+
+        private void Settings(object sender, RoutedEventArgs e)
+        {
+            Settings settingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList);
+            settingsWindow.Show();
         }
     }
 }
