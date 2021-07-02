@@ -57,43 +57,6 @@
 
         </Style>
 
-        <!--// Template for the Scrollbar //-->
-
-        <ControlTemplate x:Key="VerticalScrollBar"
-                         TargetType="{x:Type ScrollBar}">
-
-            <Grid>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!--// Border with a background //-->
-
-                <Border
-                    Grid.Row="1"
-                    Margin="0"
-                    Background="#13161c">
-                </Border>
-
-                <!--// Track - Contaioner for the element that indicates the position of the scrollbar //-->
-
-                <Track
-                    Name="PART_Track"
-                    Grid.Row="1"
-                    IsDirectionReversed="True">
-                    <!--// Thumb - Control that can be dragged by the user //-->
-                    <Track.Thumb>
-                        <Thumb
-                            Style="{StaticResource ScrollBar_Thumb}">
-                        </Thumb>
-                    </Track.Thumb>
-                </Track>
-
-            </Grid>
-
-        </ControlTemplate>
-
         <ImageBrush x:Name="Add_ICon" x:Key="AddIcon" ImageSource="Assets/Add.png"/>
 
     </Window.Resources>
@@ -112,14 +75,20 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="30"/>
                 <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
             <Label x:Name="TitleLabel" Grid.Column="0" Content="StreamTrack" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown"/>
-            <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent"/>
-            <Button Style="{StaticResource SettingsButton}" Grid.Column="2" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="0" Click="Settings">
+            <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent" Height="25">
+                <fa:ImageAwesome Icon="Twitch" Height="15" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,0,0" Foreground="#dedede"/>
+            </StackPanel>
+            <Button Grid.Column="2" Style="{StaticResource SettingsButton}" Height="25" Click="NotifHistory" ToolTip="Notification History">
+                <fa:ImageAwesome Icon="Bars" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+            </Button>
+            <Button Style="{StaticResource SettingsButton}" Grid.Column="3" Height="25" Click="Settings" ToolTip="Settings">
                 <fa:ImageAwesome Icon="Cog" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
             </Button>
-            <Button Style="{StaticResource ExitButton}" Grid.Column="3" Height="25" HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Padding="5" Click="Exit">
+            <Button Style="{StaticResource ExitButton}" Grid.Column="4" Height="25" Click="Exit">
                 <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
             </Button>
 

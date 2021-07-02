@@ -32,6 +32,41 @@
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="VerticalScrollBar"
+                     TargetType="{x:Type ScrollBar}">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--// Border with a background //-->
+
+            <Border
+                    Grid.Row="1"
+                    Margin="0"
+                    Background="#13161c">
+            </Border>
+
+            <!--// Track - Contaioner for the element that indicates the position of the scrollbar //-->
+
+            <Track
+                    Name="PART_Track"
+                    Grid.Row="1"
+                    IsDirectionReversed="True">
+                <!--// Thumb - Control that can be dragged by the user //-->
+                <Track.Thumb>
+                    <Thumb
+                            Style="{StaticResource ScrollBar_Thumb}">
+                    </Thumb>
+                </Track.Thumb>
+            </Track>
+
+        </Grid>
+
+    </ControlTemplate>
+
     <Style x:Key="SearchBoxButton" TargetType="{x:Type Button}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -295,9 +330,5 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
-    
-    
-    
-    
+
 </ResourceDictionary>

@@ -1,0 +1,112 @@
+﻿<Window x:Class="WpfApp1.NotifHistory"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1" xmlns:fa="http://schemas.fontawesome.io/icons/"
+        mc:Ignorable="d"
+        Title="NotifHistory" Height="400" Width="300" Background="#1c2026" WindowStyle="None" ResizeMode="CanResize">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="4" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <Style TargetType="ScrollBar">
+            <Setter Property="SnapsToDevicePixels"
+                    Value="True"/>
+            <Setter Property="OverridesDefaultStyle"
+                    Value="True"/>
+
+            <!--// Style Trigger //-->
+
+            <Style.Triggers>
+
+                <Trigger Property="Orientation"
+                         Value="Vertical">
+
+                    <Setter Property="Width"
+                            Value="15"/>
+                    <Setter Property="Height"
+                            Value="Auto"/>
+                    <Setter Property="Margin"
+                            Value="0"/>
+
+                    <!--// Create a style template for the scroll bar //-->
+
+                    <Setter Property="Template"
+                            Value="{DynamicResource VerticalScrollBar}"/>
+
+                </Trigger>
+
+            </Style.Triggers>
+
+        </Style>
+
+        <Style x:Key="ClearButton" TargetType="{x:Type Button}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="ClearButtonBorder" Padding="5, 3, 5, 3" Background="#2F3542" CornerRadius="2" Cursor="Hand">
+                            <Label Content="Clear" Foreground="White" FontSize="16" FontWeight="DemiBold"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ClearButtonBorder" Property="Border.Background" Value="#3c4354"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#22272d">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Content="Notifications" Foreground="White" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" MouseDown="Drag" MouseDoubleClick="AddNotif"/>
+
+            <StackPanel Grid.Column="1" Background="Transparent" MouseDown="Drag"/>
+
+            <Button Style="{StaticResource ExitButton}"
+                    Grid.Column="2"
+                    Click="Exit">
+                <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+            </Button>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch">
+            <Grid x:Name="NotificationsGrid">
+                
+            </Grid>
+        </ScrollViewer>
+
+        <Label Grid.Row="1" x:Name="ZeroNotifsLabel"
+               VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
+               HorizontalContentAlignment="Center" Foreground="#afafaf"
+               FontSize="16" FontWeight="DemiBold">
+
+            <TextBlock Text="We seem to be all out of notifications :o" Padding="40, 0, 40, 0" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+        </Label>
+        <Button x:Name="ClearButton" Visibility="Hidden" 
+                Style="{StaticResource ClearButton}" Grid.Row="1" 
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Padding="8, 5, 8, 5" Margin="0, 0, 10, 10"
+                Click="Clear">
+            <Button.Effect>
+                <DropShadowEffect Opacity="0.5"/>
+            </Button.Effect>
+        </Button>
+    </Grid>
+</Window>

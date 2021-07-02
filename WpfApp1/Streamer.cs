@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WpfApp1
 {
@@ -28,7 +25,7 @@ namespace WpfApp1
             if (other is null)
                 return false;
 
-            return this.id == other.id;
+            return id == other.id;
         }
 
         public override bool Equals(object obj) => Equals(obj as Streamer);
