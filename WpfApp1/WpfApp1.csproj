@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <None Remove="Assets\Add.png" />
+    <None Remove="Assets\NotificationSound.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\NotificationSound.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +24,14 @@
 
   <ItemGroup>
     <Resource Include="Assets\Add.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FileStore\FileStore.csproj" />
   </ItemGroup>
 
 </Project>

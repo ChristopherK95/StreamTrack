@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,11 +21,16 @@ namespace WpfApp1
     /// </summary>
     public partial class NotifHistory : Window
     {
+        private readonly SoundPlayer _soundPlayer = new();
         public NotifHistory()
         {
             InitializeComponent();
             LoadNotifs();
-            if(Notifications.NotificationList.Count > 0)
+
+            _soundPlayer.Stream = FileStore.Resource1.ClickSound;
+            _soundPlayer.Load();
+
+            if (Notifications.NotificationList.Count > 0)
             {
                 ZeroNotifsLabel.Visibility = Visibility.Hidden;
                 ClearButton.Visibility = Visibility.Visible;
@@ -50,15 +56,16 @@ namespace WpfApp1
             Notification Notif = Notifications.NotificationList[i];
 
             // Labels
+            TextBlock NameText = new() { TextTrimming = TextTrimming.CharacterEllipsis, Text = Notif.StreamerName };
             Label Streamer = new()
             {
-                Content = Notif.StreamerName,
+                Content = NameText,
                 FontSize = 18,
                 FontWeight = FontWeights.DemiBold,
                 Foreground = new SolidColorBrush(Colors.White),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Stretch,
-                VerticalContentAlignment = VerticalAlignment.Top
+                VerticalContentAlignment = VerticalAlignment.Top,
             };
             Run FillerText = new() { Text = "Went ", Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)) };
             Run Status = new() { Text = Notif.Status, Foreground = new SolidColorBrush(Notif.Status == "Offline" ? Color.FromRgb(87, 87, 87) : Color.FromRgb(233, 25, 22)) };
@@ -95,7 +102,8 @@ namespace WpfApp1
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 10, 0),
+                Margin = new Thickness(10, 0, 10, 0),
+                MaxWidth = 0,
                 Visibility = Visibility.Hidden
             };
 
@@ -125,16 +133,19 @@ namespace WpfApp1
             {
                 (sender as StackPanel).Background = new SolidColorBrush(Color.FromRgb(59, 64, 71));
                 (((sender as StackPanel).Children[0] as Grid).Children[3] as Label).Visibility = Visibility.Visible;
+                HoverText.MaxWidth = 100;
             };
             NotifPanel.MouseLeave += (sender, e) =>
             {
                 (sender as StackPanel).Background = new SolidColorBrush(Color.FromRgb(39, 44, 51));
                 (((sender as StackPanel).Children[0] as Grid).Children[3] as Label).Visibility = Visibility.Hidden;
+                HoverText.MaxWidth = 0;
             };
             NotifPanel.MouseDown += (sender, e) =>
             {
                 Notifications.NotificationList.Remove(Notif);
                 ((sender as StackPanel).Parent as Grid).Children.Remove((StackPanel)sender);
+                _soundPlayer.Play();
                 ReOrder();
             };
             Grid.SetRow(NotifPanel, i);
@@ -198,6 +209,8 @@ namespace WpfApp1
             Notifications.NotificationList.Clear();
             NotificationsGrid.Children.Clear();
             NotificationsGrid.RowDefinitions.Clear();
+
+            _soundPlayer.Play();
 
             ZeroNotifsLabel.Visibility = Visibility.Visible;
             ClearButton.Visibility = Visibility.Hidden;

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -61,12 +62,19 @@ namespace WpfApp1
         DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
         DispatcherTimer NotificationTimer = new();
+
+        private readonly SoundPlayer _soundPlayer = new();
+        
         public MainWindow()
         {
             InitializeComponent();
             LoadTwitchKey();
             StartupStreamerData();
             UpdateStatus();
+
+            _soundPlayer.Stream = FileStore.Resource1.NotificationSound;
+            _soundPlayer.Load();
+            
             dt = new();
             dt.Interval = TimeSpan.FromSeconds(1);
             dt.Tick += dtTicker;
@@ -208,16 +216,10 @@ namespace WpfApp1
                             ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome.WPF.FontAwesome).Foreground = OfflineBrush;
                             (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = "";
                             
-                            //RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == offline[i].user_name);
                             StackPanel p = RowPanel.Find(panel => (string)panel.Tag == offline[i].user_name);
 
-                            //StreamerGrid.RowDefinitions.Remove(r);
                             StreamerGrid.Children.Remove(p);
-
-                            //OfflineGrid.RowDefinitions.Add(r);
                             OfflineGrid.Children.Add(p);
-
-                            //Grid.SetRow(p, OfflineGrid.RowDefinitions.Count);
 
                             break;
                         }
@@ -233,20 +235,10 @@ namespace WpfApp1
                             ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome.WPF.FontAwesome).Foreground = LiveBrush;
                             (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = online[i].title;
 
-                            //RowDefinition r = StreamerRowList.Find(row => (string)row.Tag == online[i].user_name);
                             StackPanel p = RowPanel.Find(panel => (string)panel.Tag == online[i].user_name);
 
-                            //OfflineGrid.RowDefinitions.Remove(r);
-                            Debug.WriteLine(OfflineGrid.Children.Count);
                             OfflineGrid.Children.Remove(p);
-                            Debug.WriteLine(OfflineGrid.Children.Count);
-
-                            //StreamerGrid.RowDefinitions.Add(r);
-                            Debug.WriteLine(StreamerGrid.Children.Count);
                             StreamerGrid.Children.Add(p);
-                            Debug.WriteLine(StreamerGrid.Children.Count);
-
-                            //Grid.SetRow(p, StreamerGrid.RowDefinitions.Count);
 
                             break;
                         }
@@ -280,7 +272,7 @@ namespace WpfApp1
         public async void StartupStreamerData()
         {
             path = Environment.CurrentDirectory + "\\StreamersList.json";
-            Debug.WriteLine(path);
+
             if (!File.Exists(path))
             {
                 FileWriter = File.CreateText(path);
@@ -354,6 +346,7 @@ namespace WpfApp1
                     Notification(online[i].user_name, "live");
                     Notifications.AddNotifs(online[i].user_name, "Live");
                 }
+                _soundPlayer.Play();
                 NotificationTimer.Start();
                 List<List<Streamer>> offset = new();
                 
@@ -391,7 +384,6 @@ namespace WpfApp1
 
             for (int i = 0; i < SavedStreamers.Count; i++)
             {
-                Debug.WriteLine(SavedStreamers[i].name);
                 RowDefinition StreamerRow = new() { Height = new GridLength(SettingsVariables.height), Tag = SavedStreamers[i].name };
                 StreamerRowList.Add(StreamerRow);
 
