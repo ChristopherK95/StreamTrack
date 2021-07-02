@@ -22,8 +22,10 @@
             <StackPanel Grid.Column="0"
                         MouseDown="StackPanel_MouseDown"
                         HorizontalAlignment="Stretch"
-                        Background="Transparent">
+                        Background="Transparent"
+                        Orientation="Horizontal">
                 <Label Content="Settings" Foreground="White" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" VerticalContentAlignment="Center"/>
+                <fa:ImageAwesome Height="13" Icon="Cog" Foreground="White" Margin="5, 2, 0, 0"/>
             </StackPanel>
 
             <Button Style="{StaticResource ExitButton}"
@@ -124,10 +126,7 @@
                         Margin="0,0,10,0"
                         HorizontalAlignment="Left"
                         Cursor="Hand"
-                        MouseDown="Border_MouseDown">
-
-                    
-                </Border>
+                        MouseDown="Border_MouseDown"/>
 
                 <Label x:Name="ThemeColorTextPreview" Grid.Column="2"
                        Content="#FFFFFF" Foreground="White"

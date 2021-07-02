@@ -10,6 +10,5 @@ namespace WpfApp1
     {
         public static bool SettingsIsOpen = false;
         public static bool NotifsIsOpen = false;
-
     }
 }
