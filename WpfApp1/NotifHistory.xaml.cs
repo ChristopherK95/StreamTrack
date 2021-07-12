@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Text;
@@ -62,6 +63,7 @@ namespace WpfApp1
                 Content = NameText,
                 FontSize = 18,
                 FontWeight = FontWeights.DemiBold,
+                FontFamily = new FontFamily("Consolas"),
                 Foreground = new SolidColorBrush(Colors.White),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -77,6 +79,7 @@ namespace WpfApp1
                 Content = Text,
                 FontSize = 14,
                 FontWeight = FontWeights.DemiBold,
+                FontFamily = new FontFamily("Consolas"),
                 Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -84,9 +87,10 @@ namespace WpfApp1
             };
             Label TimeStamp = new()
             {
-                Content = $"{Notif.TimeStamp.Hour}:{Notif.TimeStamp.Minute}",
+                Content = $"{Notif.TimeStamp:HH}:{Notif.TimeStamp:mm)}",
                 FontSize = 20,
                 FontWeight = FontWeights.DemiBold,
+                FontFamily = new FontFamily("Consolas"),
                 Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -98,6 +102,7 @@ namespace WpfApp1
                 Content = "Click to delete",
                 FontSize = 12,
                 FontWeight = FontWeights.DemiBold,
+                FontFamily = new FontFamily("Consolas"),
                 Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -160,7 +165,7 @@ namespace WpfApp1
 
         private void LoadNotifs()
         {
-            for(int i = 0; i < Notifications.NotificationList.Count; i++)
+            for (int i = 0; i < Notifications.NotificationList.Count; i++)
             {
                 LoadNewNotif(i);
             }
@@ -197,11 +202,6 @@ namespace WpfApp1
             {
                 DragMove();
             }
-        }
-
-        private void AddNotif(object sender, MouseButtonEventArgs e)
-        {
-            Notifications.AddNotifs("Basse", "Live");
         }
 
         private void Clear(object sender, RoutedEventArgs e)

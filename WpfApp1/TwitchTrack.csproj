@@ -4,34 +4,27 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>TwitchTrack64.ico</ApplicationIcon>
+    <AssemblyName>StreamTrack</AssemblyName>
+    <RootNamespace>StreamTrack</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Add.png" />
-    <None Remove="Assets\NotificationSound.wav" />
+    <None Remove="ClearIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\NotificationSound.wav" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
     <PackageReference Include="FontAwesome.Sharp" Version="5.15.3" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Add.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FileStore\FileStore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ClearIcon.png" />
   </ItemGroup>
 
 </Project>

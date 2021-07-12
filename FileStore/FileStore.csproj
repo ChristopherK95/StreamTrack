@@ -5,6 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ClearIcon.png" />
+    <None Remove="Resources\ClickSound.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\ClearIcon.png" />
+    <Resource Include="Resources\ClickSound.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resource1.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

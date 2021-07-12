@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WpfApp1
 {
@@ -23,7 +14,7 @@ namespace WpfApp1
         public List<RowDefinition> rowDefinitions;
         public List<Image> images;
         List<TextBlock> titleTexts;
-        
+
         private bool saved = false;
         public Settings(List<RowDefinition> rowDefinitions, List<Image> images, List<TextBlock> titleTexts)
         {
@@ -38,7 +29,7 @@ namespace WpfApp1
             HeightSlider.ValueChanged += Slider_ValueChanged;
 
             FontSizeSlider.Value = SettingsVariables.fontSize;
-            FontSizeLabel.Content = "Row height: " + SettingsVariables.fontSize;
+            FontSizeLabel.Content = "Font size: " + SettingsVariables.fontSize;
             FontSizeSlider.ValueChanged += FontSizeChanged;
 
             ThemeColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.themeColor));
@@ -157,5 +148,6 @@ namespace WpfApp1
             ColorPalette colorPalette = new(FontColorPreview, FontColorTextPreview);
             colorPalette.Show();
         }
+
     }
 }
