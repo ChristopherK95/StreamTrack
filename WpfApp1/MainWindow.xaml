@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        
         mc:Ignorable="d"
-        Title="StreamTrack" Height="500" Width="400"
-        MinWidth="400" MinHeight="500"
-        Background="#22272d" WindowStyle="None" ResizeMode="CanResize" x:Name="StreamTrackWindow">
+        Title="StreamTrack" Height="468" Width="400"
+        MinWidth="400" MinHeight="468"
+        Background="#22272d" WindowStyle="None" ResizeMode="CanResize" x:Name="StreamTrackWindow" WindowStartupLocation="CenterScreen">
 
     <WindowChrome.WindowChrome>
         <WindowChrome ResizeBorderThickness="4" CaptionHeight="0"/>
@@ -57,83 +58,151 @@
 
         </Style>
 
-        <ImageBrush x:Name="Add_ICon" x:Key="AddIcon" ImageSource="Assets/Add.png"/>
+        <Storyboard x:Key="SlideDown">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                             From="-125" To="0"
+                             Duration="0:0:0.3"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" From="0" To="1" Duration="0:0:0.3"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SlideUp">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                             From="0" To="-125"
+                             Duration="0:0:0.3"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" From="1" To="0" Duration="0:0:0.3"/>
+        </Storyboard>
 
     </Window.Resources>
     
-
     <Grid Cursor="Arrow">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="#FF2C9C55" Panel.ZIndex="100">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="40" Cursor="Hand"/>
+                <ColumnDefinition Width="40" Cursor="Hand"/>
+                <ColumnDefinition Width="40" Cursor="Hand"/>
             </Grid.ColumnDefinitions>
 
-            <Label x:Name="TitleLabel" Grid.Column="0" Content="StreamTrack" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" Foreground="#dedede" VerticalAlignment="Center" HorizontalAlignment="Left" MouseDown="Label_MouseDown"/>
-            <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent" Height="25">
-                <fa:ImageAwesome Icon="Twitch" Height="15" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,0,0" Foreground="#dedede"/>
+            <Label x:Name="TitleLabel" Grid.Column="0" Content="TwitchTrack" FontSize="32" FontWeight="Bold" Padding="5, 0,0,0" Margin="0 -5 0 0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Stretch" MouseDown="Label_MouseDown"/>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent" Orientation="Horizontal" Margin="5 0 0 0">
+                <!--<fa:ImageAwesome Icon="Twitch" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,0,0" Foreground="White"/>-->
+                <ContentControl Content="{StaticResource Logo}" Width="32" Height="32"/>
             </StackPanel>
-            <Button Grid.Column="2" Style="{StaticResource SettingsButton}" Height="25" Click="NotifHistory" ToolTip="Notification History">
-                <fa:ImageAwesome Icon="Bars" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+            <Button Style="{StaticResource SettingsButton}" Grid.Column="2" Click="ExtraMenu" ToolTip="Extra">
+                <fa:ImageAwesome Icon="Bars" Foreground="White" Margin="5"/>
             </Button>
-            <Button Style="{StaticResource SettingsButton}" Grid.Column="3" Height="25" Click="Settings" ToolTip="Settings">
-                <fa:ImageAwesome Icon="Cog" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+            <Button Style="{StaticResource SettingsButton}" Grid.Column="3" Click="Minimize" ToolTip="Minimize" Cursor="Hand">
+                <fa:ImageAwesome Icon="Minus" Foreground="White" Margin="5" Cursor="Hand"/>
             </Button>
-            <Button Style="{StaticResource ExitButton}" Grid.Column="4" Height="25" Click="Exit">
-                <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+            <Button Style="{StaticResource ExitButton}" Grid.Column="4" Click="Exit">
+                <fa:ImageAwesome Icon="Times" Foreground="White" Margin="5"/>
             </Button>
-
         </Grid>
 
-        <StackPanel Grid.Row="1"
+        <Border Grid.Row="1" BorderBrush="#FF2C9C55" BorderThickness="3 0 3 3">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border x:Name="SlideMenu" Grid.RowSpan="2" Grid.Row="0" Opacity="0" Panel.ZIndex="100" BorderThickness="0" Height="Auto" Width="200" VerticalAlignment="Top" HorizontalAlignment="Right">
+                <StackPanel Background="#FF2C9C55">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Cursor="Hand" MouseDown="Settings" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <fa:ImageAwesome Grid.Column="0" Icon="Cog" Foreground="White" Width="25" Margin="5"/>
+                            <Label Grid.Column="1" Content="Settings" Foreground="White" FontSize="22" FontWeight="DemiBold" Width="Auto"/>
+                        </Grid>
+
+                        <Grid Grid.Row="1" Cursor="Hand" MouseDown="NotifHistory" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <fa:ImageAwesome Grid.Column="0" Icon="Bell" Foreground="White" Width="25" Margin="5"/>
+                            <Label Grid.Column="1" Content="Notifications" Foreground="White" FontSize="22" FontWeight="DemiBold" Width="Auto"/>
+                        </Grid>
+
+                        <Grid Grid.Row="2" Cursor="Hand" MouseDown="OpenTokenView" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <fa:ImageAwesome Grid.Column="0" Icon="Key" Foreground="White" Width="25" Margin="5"/>
+                            <Label Grid.Column="1" Content="Token" Foreground="White" FontSize="22" FontWeight="DemiBold" Width="Auto"/>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+
+                <Border.RenderTransform>
+                    <TranslateTransform Y="-125"/>
+                </Border.RenderTransform>
+                
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Direction="240" ShadowDepth="15" Opacity="0.5"/>
+                </Border.Effect>
+            </Border>
+
+            <StackPanel Grid.Row="0"
                     Background="#2b2d3b"
                     x:Name="MiscBar">
-            <Grid HorizontalAlignment="Stretch" Height="40">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button Style="{StaticResource SearchBoxButton}"
+                <Grid HorizontalAlignment="Stretch" Height="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource SearchBoxButton}"
+                            Grid.Column="0"
                             Height="40"
                             Width="60"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left"
-                            Padding="0"
-                            Background="#383d42"
-                            Foreground="White"
                             Cursor="Hand"
-                            BorderThickness="0,0,0,0"
-                            Grid.Column="0"
-                            Click="Button_Click"
-                            MouseEnter="AddButton_MouseEnter" 
-                            MouseLeave="AddButton_MouseLeave">
-                    <fa:ImageAwesome x:Name="AddButton" Icon="Search" Width="25" Height="25" Foreground="Gray"/>
-                </Button>
-                <StackPanel Grid.Column="1" VerticalAlignment="Stretch" Height="40">
-                    <Grid VerticalAlignment="Stretch" Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Name="TimerLabel"
+                            Click="Button_Click">
+                        <fa:ImageAwesome x:Name="AddButton" Icon="Plus" Width="25" Height="25" Foreground="White"/>
+                    </Button>
+                    <Button Style="{StaticResource SearchBoxButton}"
+                            Grid.Column="1"
+                            Height="40"
+                            Width="60"
+                            Cursor="Hand"
+                            Click="Edit">
+                        <fa:ImageAwesome Icon="Pencil" Width="25" Height="25" Foreground="White"/>
+                    </Button>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Stretch" Height="40">
+                        <Grid VerticalAlignment="Stretch" Height="40">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Name="TimerLabel"
                                Grid.Column="0"
                                Content="Updated 0s ago"
                                Foreground="#FFCCCCCC"
                                HorizontalContentAlignment="Right"
                                VerticalAlignment="Center">
 
-                        </Label>
-                        
-                        <fa:ImageAwesome Name="RefreshIcon"
+                            </Label>
+
+                            <fa:ImageAwesome Name="RefreshIcon"
                                          Grid.Column="1" 
                                          Icon="Refresh" 
                                          Width="15" 
@@ -142,14 +211,16 @@
                                          VerticalAlignment="Center"
                                          Margin="5"
                                          SpinDuration="0.5"
-                                         MouseDown="RefreshIcon_MouseDown"/>
-                    </Grid>
-                    
-                </StackPanel>
-                
-                
-                <TextBox x:Name="SearchBox"
+                                         Cursor="Hand"
+                                         Visibility="Collapsed"/>
+                        </Grid>
+
+                    </StackPanel>
+
+
+                    <TextBox x:Name="SearchBox"
                              Grid.Column="1"
+                             Grid.ColumnSpan="2"
                              HorizontalAlignment="Stretch"
                              Background="White"
                              FontSize="22"
@@ -158,48 +229,99 @@
                              VerticalAlignment="Stretch"
                              Visibility="Hidden"
                              BorderThickness="0" KeyUp="SearchBox_KeyUp"/>
-            </Grid>
-        </StackPanel>
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Grid.Row="2">
-            <Grid x:Name="StreamerPanel">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Content="Live" 
-                       Foreground="White" FontSize="16" 
-                       FontWeight="DemiBold" Padding="5,0,0,0" 
-                       VerticalContentAlignment="Center" Background="#FF161A1F"/>
-
-                <Label Grid.Row="2" Content="Offline" 
-                       Foreground="White" FontSize="16" 
-                       FontWeight="DemiBold" Padding="5,0,0,0" 
-                       VerticalContentAlignment="Center" Background="#FF161A1F"/>
-            </Grid>
-        </ScrollViewer>
-
-
-        <ScrollViewer x:Name="SearchResultsPanel" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Visibility="Hidden" Grid.Row="2" >
-            <ScrollViewer.RenderTransform>
-                <TranslateTransform x:Name="ResultHidden" X="{Binding ActualWidth, ElementName=SearchResultsPanel}" Y="0"/>
-            </ScrollViewer.RenderTransform>
-
-            <StackPanel Background="#FF3B3E4D">
-                <Grid x:Name="SearchResultsGrid" Height="Auto" VerticalAlignment="Top" Visibility="Hidden">
-
                 </Grid>
             </StackPanel>
-        </ScrollViewer>
 
-        <StackPanel Grid.Row="2" Height="auto" Panel.ZIndex="100" Background="#2b2f36" VerticalAlignment="Top">
-            <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Grid.Row="1">
+                <Grid x:Name="StreamerPanel">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Content="Live" 
+                       Foreground="White" FontSize="18" 
+                       FontWeight="DemiBold" Padding="5,0,0,0" 
+                       VerticalContentAlignment="Center" Background="#FF161A1F"/>
+
+                    <Label Grid.Row="2" Content="Offline" 
+                       Foreground="White" FontSize="18" 
+                       FontWeight="DemiBold" Padding="5,0,0,0" 
+                       VerticalContentAlignment="Center" Background="#FF161A1F"/>
+                </Grid>
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="SearchResultsPanel" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Visibility="Hidden" Grid.Row="1" >
+                <ScrollViewer.RenderTransform>
+                    <TranslateTransform x:Name="ResultHidden" X="{Binding ActualWidth, ElementName=SearchResultsPanel}" Y="0"/>
+                </ScrollViewer.RenderTransform>
+
+                <StackPanel Background="#FF3B3E4D">
+                    <Grid x:Name="SearchResultsGrid" Height="Auto" VerticalAlignment="Top" Visibility="Hidden"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="1" Height="auto" Panel.ZIndex="100" Background="#2b2f36" VerticalAlignment="Top">
+                <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch">
+                </Grid>
+            </StackPanel>
+
+            <fa:ImageAwesome x:Name="LoadCog" Icon="Cog" Spin="True" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
+
+            <Grid x:Name="TokenView" Grid.Row="0" Grid.RowSpan="2" Background="#22272d" Visibility="Hidden">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Button Grid.Row="0"
+                        Style="{StaticResource BackButton}"
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Top"
+                        Margin="10 10 0 0"
+                        Background="Transparent"
+                        Panel.ZIndex="1"
+                        Click="Button_Click_1">
+                </Button>
+
+                <Label Grid.Row="0" Content="Current Token" Foreground="White" FontWeight="DemiBold" FontSize="30" Padding="15, 0, 5, 0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0, 10, 0, 20"/>
+
+                <Border Grid.Row="1" BorderThickness="6 6 0 0" BorderBrush="#FF181C21" Background="#FF4A4B4D" HorizontalAlignment="Center" ClipToBounds="True" Margin="0, 10, 0, 0">
+                    <Label x:Name="CurrentTokenLabel" Grid.Row="1" Content=""  Foreground="White" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Padding="10" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                </Border>
+
+                <Label Grid.Row="2" HorizontalAlignment="Center" Padding="60, 10" Margin="0, 40, 0, 0">
+                    <TextBlock x:Name="TokenStatus" Text="" Foreground="White" 
+                           FontSize="16" TextAlignment="Center" 
+                           TextWrapping="Wrap">
+                    </TextBlock>
+                </Label>
+
+                <Grid Grid.Row="3" UseLayoutRounding="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Style="{StaticResource AuthButton}" Width="150" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Get Token" Foreground="White" FontSize="26" FontWeight="Bold" Click="GetToken">
+                        <Button.Effect>
+                            <DropShadowEffect Opacity="0.5"/>
+                        </Button.Effect>
+                    </Button>
+
+                        <Button Grid.Column="1" Style="{StaticResource AuthButton}" Width="150" VerticalAlignment="Center" Content="Paste" HorizontalContentAlignment="Center" Foreground="White" FontSize="26" FontWeight="Bold" Click="PasteToken">
+                        <Button.Effect>
+                            <DropShadowEffect Opacity="0.5"/>
+                        </Button.Effect>
+                    </Button>
+                </Grid>
             </Grid>
-        </StackPanel>
+        </Grid>
+        </Border>
         
-        <fa:ImageAwesome x:Name="LoadCog" Icon="Cog" Spin="True" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
     </Grid>
 </Window>

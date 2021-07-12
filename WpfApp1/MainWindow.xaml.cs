@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
-using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -26,10 +23,6 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        // Bools.
-        bool SettingsOpen = false;
-        bool NotificationsOpen = false;
-
         // Brushes.
         readonly SolidColorBrush IconWhite = new(Colors.White);
         readonly SolidColorBrush IconGray = new(Colors.Gray);
@@ -62,19 +55,92 @@ namespace WpfApp1
         DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
         DispatcherTimer NotificationTimer = new();
+        CancellationTokenSource cancelToken;
 
         private readonly SoundPlayer _soundPlayer = new();
-        
+
+        Storyboard SlideDown;
+        Storyboard SlideUp;
+
         public MainWindow()
         {
             InitializeComponent();
-            LoadTwitchKey();
+            CurrentTokenLabel.Content = SettingsVariables.authKey;
+
+            SlideDown = Resources["SlideDown"] as Storyboard;
+            SlideUp = Resources["SlideUp"] as Storyboard;
+
+            if (SettingsVariables.authKey == "empty")
+            {
+                TokenView.Visibility = Visibility.Visible;
+                StreamTrackWindow.IsEnabled = false;
+            }
+            else
+            {
+                authKey = SettingsVariables.authKey;
+                ValidateToken();
+            }
+        }
+
+        private async void ValidateToken()
+        {
+            HttpClient hc = new();
+            hc.DefaultRequestHeaders.Add("Authorization", "OAuth " + authKey);
+            string url = "https://id.twitch.tv/oauth2/validate";
+
+            Task<Stream> Result = hc.GetStreamAsync(url);
+            Stream vs;
+            try
+            {
+                vs = await Result;
+                
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine(e);
+                if (e.ToString().Contains("Unauthorized"))
+                {
+                    Run r = new() { Text = "Your token has expired. Generate a new token to keep using StreamTrack." };
+                    TokenStatus.Inlines.Add(r);
+                    TokenView.Visibility = Visibility.Visible;
+                }
+                vs = null;
+            }
+            if(vs != null)
+            {
+                StreamReader am = new(vs);
+                dynamic FetchedData = await am.ReadToEndAsync();
+                dynamic ObjectData = Newtonsoft.Json.JsonConvert.DeserializeObject(FetchedData);
+                dynamic TokenLifeSpan = ObjectData["expires_in"];
+
+                if (TokenLifeSpan < 86400)
+                {
+                    Run r1 = new() { Text = "Your token is about to expire, preventing StreamTrack from updating you of your favourite streamers." };
+                    LineBreak lb = new();
+                    Run r2 = new() { Text = "Might be a good idea to get a new token." };
+                    TokenStatus.Inlines.Add(r1);
+                    TokenStatus.Inlines.Add(lb);
+                    TokenStatus.Inlines.Add(r2);
+
+                    TokenView.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Start();
+                }
+            }
+        }
+
+        private void Start()
+        {
+            cancelToken = new();
+            authKey = SettingsVariables.authKey;
             StartupStreamerData();
             UpdateStatus();
 
             _soundPlayer.Stream = FileStore.Resource1.NotificationSound;
             _soundPlayer.Load();
-            
+
             dt = new();
             dt.Interval = TimeSpan.FromSeconds(1);
             dt.Tick += dtTicker;
@@ -108,7 +174,7 @@ namespace WpfApp1
             Grid.SetRow(RowGrid, 0);
 
             Label StreamerName = new() 
-            { 
+            {
                 Content = streamer,
                 FontSize = 16,
                 FontWeight = FontWeights.Bold,
@@ -156,6 +222,7 @@ namespace WpfApp1
         {
             RefreshIcon.Spin = false;
             RefreshAnimation.Stop();
+            RefreshIcon.Visibility = Visibility.Collapsed;
         }
 
         private void NotifTicker(object sender, EventArgs e)
@@ -169,10 +236,8 @@ namespace WpfApp1
         {
             while (true)
             {
-                await Task.Run(() =>
-                {
-                    Thread.Sleep(TimeSpan.FromMinutes(1));
-                });
+                await Task.Delay(TimeSpan.FromMinutes(1));
+                RefreshIcon.Visibility = Visibility.Visible;
                 RefreshIcon.Spin = true;
                 RefreshAnimation.Start();
                 RecentStreamers = Streamers.ToList();
@@ -183,6 +248,10 @@ namespace WpfApp1
 
         public async void UpdateStreamerUI()
         {
+            if(SavedStreamers.Count == 0)
+            {
+                return;
+            }
             dynamic FetchedData = await GetStreamerStatus();
             dynamic ObjectData = Newtonsoft.Json.JsonConvert.DeserializeObject(FetchedData);
             dynamic LiveStreamers = ObjectData["data"];
@@ -277,6 +346,7 @@ namespace WpfApp1
             {
                 FileWriter = File.CreateText(path);
                 FileWriter.Write("");
+                FileWriter.Close();
             }
             else
             {
@@ -411,8 +481,9 @@ namespace WpfApp1
                 Label Name = new()
                 {
                     Content = SavedStreamers[i].name,
-                    FontSize = 20,
+                    FontSize = 30,
                     FontWeight = FontWeights.Bold,
+                    FontFamily = new FontFamily("Consolas"),
                     Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor)),
                     Width = double.NaN,
                     Padding = new Thickness(5, 2, 0, 0)
@@ -425,7 +496,7 @@ namespace WpfApp1
                     Foreground = OfflineBrush,
                     Width = 20,
                     Margin = new Thickness(0, 10, 0, 0),
-                    ToolTip = "Live"
+                    ToolTip = "Offline"
                 };
 
                 TextBlock TitleContent = new()
@@ -441,11 +512,11 @@ namespace WpfApp1
 
                 Label Title = new()
                 {
-                    VerticalAlignment = VerticalAlignment.Top,
+                    VerticalAlignment = VerticalAlignment.Bottom,
                     Padding = new Thickness(5, 0, 0, 0),
                     Content = TitleContent,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    
+                    VerticalContentAlignment = VerticalAlignment.Bottom
                 };
 
                 for (int j = 0; j < Streamers.Count; j++)
@@ -455,6 +526,7 @@ namespace WpfApp1
                         TitleContent.Text = Streamers[j].title;
                         TitleContent.ToolTip = Streamers[j].title;
                         Live.Foreground = LiveBrush;
+                        Live.ToolTip = "Live";
                     }
                 }
                 
@@ -474,7 +546,8 @@ namespace WpfApp1
 
                 WrapPanel TitlePanel = new()
                 {
-                    HorizontalAlignment = HorizontalAlignment.Stretch
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 Rows.Children.Add(TitlePanel);
                 Grid.SetRow(TitlePanel, 1);
@@ -483,7 +556,7 @@ namespace WpfApp1
                 TextPanel.Children.Add(Live);
 
                 TitlePanel.Children.Add(Title);
-
+                
                 RowColumns.Children.Add(Rows);
                 Grid.SetColumn(Rows, 1);
 
@@ -515,28 +588,13 @@ namespace WpfApp1
             StreamerPanel.Children.Add(OfflineGrid);
             Grid.SetRow(OfflineGrid, 3);
 
-            Functions.LoadElements(StreamTrackWindow, StreamerGrid, OfflineGrid, TitleLabel);
+            Functions.LoadElements(StreamerGrid, OfflineGrid);
         }
 
         public Color SetColor(string hexColor)
         {
             Color color = (Color)ColorConverter.ConvertFromString(hexColor);
             return color;
-        }
-
-        public void LoadTwitchKey()
-        {
-            string url = "https://id.twitch.tv/oauth2/token?client_id=p4dvj9r4r5jnih8uq373imda1n2v0j&client_secret=r5lartsu3ag7i7nc59owx30u9dste6&grant_type=client_credentials";
-            HttpWebRequest WebRequest = (HttpWebRequest)HttpWebRequest.Create(url);
-            WebRequest.Method = "POST";
-            dynamic wResponse = WebRequest.GetResponse().GetResponseStream();
-            StreamReader Reader = new(wResponse);
-            dynamic res = Reader.ReadToEnd();
-            Reader.Close();
-            wResponse.Close();
-
-            dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(res);
-            authKey = json["access_token"];
         }
 
         public async Task<dynamic> FetchData(string SearchName)
@@ -574,7 +632,7 @@ namespace WpfApp1
             {
                 SearchBox.Visibility = Visibility.Hidden;
                 SearchResultsPanel.Visibility = Visibility.Hidden;
-                AddButton.Icon = FontAwesome.WPF.FontAwesomeIcon.Search;
+                AddButton.Icon = FontAwesome.WPF.FontAwesomeIcon.Plus;
 
                 Storyboard SlideOut = Resources["SlideOut"] as Storyboard;
                 SearchResultsPanel.BeginStoryboard(SlideOut);
@@ -584,6 +642,7 @@ namespace WpfApp1
         {
             if (e.Key == Key.Enter && SearchBox.Text != "")
             {
+                
                 if (SearchResults.Count > 0)
                 {
                     SearchResults.Clear();
@@ -606,6 +665,8 @@ namespace WpfApp1
                 }
 
                 LoadCog.Visibility = Visibility.Visible;
+                LoadCog.Spin = true;
+                
                 for (int i = 0; i < SearchResults.Count; i++)
                 {
                     await Task.Run(() =>
@@ -613,8 +674,6 @@ namespace WpfApp1
                         Dispatcher.BeginInvoke(new Load_result_panels_callback(AddResult), new object[] { i });
                     });
                 }
-                LoadCog.Visibility = Visibility.Hidden;
-                SearchResultsGrid.Visibility = Visibility.Visible;
             }
         }
         public void AddResult(int i)
@@ -631,13 +690,11 @@ namespace WpfApp1
             PanelGrid.Children.Add(ProfileImg);
             Grid.SetColumn(ProfileImg, 0);
 
-            Label Name = new() { Content = SearchResults[i].display_name, Foreground = new SolidColorBrush(Colors.White), FontSize = 22, VerticalContentAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Stretch };
+            Label Name = new() { Content = SearchResults[i].display_name, Foreground = new SolidColorBrush(Colors.White), FontWeight = FontWeights.DemiBold, FontSize = 26, FontFamily = new FontFamily("Consolas"), VerticalContentAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Stretch };
             PanelGrid.Children.Add(Name);
             Grid.SetColumn(Name, 1);
 
-            
-
-            FontAwesome.WPF.FontAwesome Add = new() 
+            FontAwesome.WPF.FontAwesome Add = new()
             {
                 FontSize = 40,
                 Foreground = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255)),
@@ -681,7 +738,11 @@ namespace WpfApp1
             Grid.SetColumn(Add, 2);
 
             StackPanel ResultPanel = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
-
+            if(i == SearchResults.Count - 1)
+            {
+                ResultPanel.Loaded += ResultsLoaded;
+            }
+            
             if (i % 2 == 0)
             {
                 ResultPanel.Background = new SolidColorBrush(Color.FromRgb(28, 32, 38));
@@ -700,13 +761,20 @@ namespace WpfApp1
             SearchResultsGrid.Children.Add(ResultPanel);
         }
 
+        public async void ResultsLoaded(object sender, EventArgs e)
+        {
+            await Task.Delay(500);
+            LoadCog.Visibility = Visibility.Hidden;
+            SearchResultsGrid.Visibility = Visibility.Visible;
+        }
+
         public void SaveStreamer(StreamerSearchResult result)
         {
             Newtonsoft.Json.Linq.JObject StreamerJson = new(
                 new Newtonsoft.Json.Linq.JProperty("id", result.id),
                 new Newtonsoft.Json.Linq.JProperty("name", result.display_name),
                 new Newtonsoft.Json.Linq.JProperty("thumbnail_url", result.thumbnail_url));
-
+            
             JsonList.Add(StreamerJson);
             SavedStreamers.Add(new SavedStreamer(result.id, result.display_name, result.thumbnail_url));
 
@@ -715,16 +783,6 @@ namespace WpfApp1
                 Newtonsoft.Json.JsonSerializer Serializer = new();
                 Serializer.Serialize(FileWriter, JsonList);
             }
-        }
-
-        private void AddButton_MouseEnter(object sender, MouseEventArgs e)
-        {
-            AddButton.Foreground = IconWhite;
-        }
-
-        private void AddButton_MouseLeave(object sender, MouseEventArgs e)
-        {
-            AddButton.Foreground = IconGray;
         }
 
         private void Exit(object sender, RoutedEventArgs e)
@@ -748,19 +806,17 @@ namespace WpfApp1
             }
         }
 
-        private void RefreshIcon_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            
-        }
-
-
         private void Settings(object sender, RoutedEventArgs e)
         {
             if(IsOpened.SettingsIsOpen == false)
             {
                 IsOpened.SettingsIsOpen = true;
-                Settings SettingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList);
+                Settings SettingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList) { Left = StreamTrackWindow.Left + StreamTrackWindow.ActualWidth + 20, Top = StreamTrackWindow.Top };
                 SettingsWindow.Show();
+            }
+            if (SlideMenu.Opacity == 1)
+            {
+                SlideMenu.BeginStoryboard(SlideUp);
             }
         }
 
@@ -769,9 +825,218 @@ namespace WpfApp1
             if(IsOpened.NotifsIsOpen == false)
             {
                 IsOpened.NotifsIsOpen = true;
-                NotifHistory NotificationsWindow = new();
+                NotifHistory NotificationsWindow = new() { Left = StreamTrackWindow.Left - 320, Top = StreamTrackWindow.Top };
                 NotificationsWindow.Show();
             }
+            if (SlideMenu.Opacity == 1)
+            {
+                SlideMenu.BeginStoryboard(SlideUp);
+            }
+        }
+
+        private void Start(object sender, EventArgs e)
+        {
+            cancelToken = new();
+            StreamTrackWindow.IsEnabled = true;
+            authKey = SettingsVariables.authKey;
+            if (authKey != "empty")
+            {
+                StartupStreamerData();
+                UpdateStatus();
+
+                _soundPlayer.Stream = FileStore.Resource1.NotificationSound;
+                _soundPlayer.Load();
+
+                dt = new();
+                dt.Interval = TimeSpan.FromSeconds(1);
+                dt.Tick += dtTicker;
+                dt.Start();
+
+                RefreshAnimation = new();
+                RefreshAnimation.Interval = TimeSpan.FromSeconds(1);
+                RefreshAnimation.Tick += RefreshTicker;
+
+                NotificationTimer.Interval = TimeSpan.FromSeconds(3);
+                NotificationTimer.Tick += NotifTicker;
+
+                TitleLabel.Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
+                StreamTrackWindow.Background = new SolidColorBrush(SetColor(SettingsVariables.themeColor));
+            }
+        }
+
+        private void OpenTokenView(object sender, RoutedEventArgs e)
+        {
+            TokenView.Visibility = TokenView.Visibility == Visibility.Hidden ? Visibility.Visible : Visibility.Hidden;
+            if(SlideMenu.Opacity == 1)
+            {
+                SlideMenu.BeginStoryboard(SlideUp);
+            }
+        }
+
+        private void GetToken(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://streamtrack-authentication.firebaseapp.com/") { UseShellExecute = true });
+        }
+
+        private void PasteToken(object sender, RoutedEventArgs e)
+        {
+            string userToken = Clipboard.GetText();
+            SettingsVariables.authKey = userToken;
+            SettingsVariables.SaveSettings();
+            CurrentTokenLabel.Content = userToken;
+            TokenView.Visibility = Visibility.Hidden;
+            TokenStatus.Inlines.Clear();
+        }
+
+        private void Minimize(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void Edit(object sender, RoutedEventArgs e)
+        {
+            SearchResultsGrid.Children.Clear();
+            SearchResultsGrid.RowDefinitions.Clear();
+            if (SearchResultsPanel.Visibility == Visibility.Hidden)
+            {
+                for (int i = 0; i < SavedStreamers.Count; i++)
+                {
+                    Grid rowGrid = new() { HorizontalAlignment = HorizontalAlignment.Stretch, Background = new SolidColorBrush(Color.FromRgb(39, 44, 51)), Margin = new Thickness(0, 0, 0, 2) };
+                    Grid.SetRow(rowGrid, i);
+                    ColumnDefinition col1 = new() { Width = GridLength.Auto };
+                    ColumnDefinition col2 = new();
+                    rowGrid.ColumnDefinitions.Add(col1);
+                    rowGrid.ColumnDefinitions.Add(col2);
+
+                    rowGrid.Children.Add(new Label()
+                    {
+                        Content = SavedStreamers[i].name,
+                        Foreground = new SolidColorBrush(Colors.White),
+                        FontSize = 26,
+                        FontWeight = FontWeights.DemiBold,
+                        FontFamily = new FontFamily("Consolas"),
+                        Padding = new Thickness(5, 0, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        VerticalContentAlignment = VerticalAlignment.Center
+                    });
+                    rowGrid.Children.Add(new FontAwesome.WPF.FontAwesome()
+                    {
+                        Icon = FontAwesome.WPF.FontAwesomeIcon.Remove,
+                        Foreground = new SolidColorBrush(Color.FromRgb(255, 61, 61)),
+                        Opacity = 0.7,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        TextAlignment = TextAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        FontSize = 30,
+                        Margin = new Thickness(0, 0, 10, 0),
+                        Cursor = Cursors.Hand,
+
+                    });
+                    rowGrid.Children[1].MouseEnter += (sender, e) =>
+                    {
+                        (sender as FontAwesome.WPF.FontAwesome).Opacity = 1;
+                    };
+                    rowGrid.Children[1].MouseLeave += (sender, e) =>
+                    {
+                        (sender as FontAwesome.WPF.FontAwesome).Opacity = 0.7;
+                    };
+                    rowGrid.Children[1].MouseDown += (sender, e) =>
+                    {
+                        string name = (((sender as FontAwesome.WPF.FontAwesome).Parent as Grid).Children[0] as Label).Content.ToString();
+                        SearchResultsGrid.Children.Remove((sender as FontAwesome.WPF.FontAwesome).Parent as Grid);
+                        SavedStreamers.Remove(SavedStreamers.Find(streamer => streamer.name == name));
+                        Streamers.Remove(Streamers.Find(streamer => streamer.user_name == name));
+                        JsonList.Remove(JsonList.Find(item => item.Property("name").Value.ToString() == name));
+
+                        SearchResultsGrid.RowDefinitions.Remove(SearchResultsGrid.RowDefinitions[Grid.GetRow((sender as FontAwesome.WPF.FontAwesome).Parent as Grid)]);
+
+                        for(int i = 0; i < SearchResultsGrid.Children.Count; i++)
+                        {
+                            Grid.SetRow(SearchResultsGrid.Children[i], i);
+                        }
+
+                        List<StackPanel> list = new();
+                        for(int i = 0; i < StreamerGrid.Children.Count; i++)
+                        {
+                            list.Add(StreamerGrid.Children[i] as StackPanel);
+                        }
+                        StreamerGrid.Children.Remove(list.Find(streamer => streamer.Tag.ToString() == name));
+
+                        list.Clear();
+                        for(int i = 0; i < OfflineGrid.Children.Count; i++)
+                        {
+                            list.Add(OfflineGrid.Children[i] as StackPanel);
+                        }
+                        OfflineGrid.Children.Remove(list.Find(streamer => streamer.Tag.ToString() == name));
+
+                        ReOrder();
+                        using (FileWriter = File.CreateText(path))
+                        {
+                            Newtonsoft.Json.JsonSerializer Serializer = new();
+                            Serializer.Serialize(FileWriter, JsonList);
+                        }
+                    };
+                    Grid.SetColumn(rowGrid.Children[0], 0);
+                    Grid.SetColumn(rowGrid.Children[1], 1);
+
+                    SearchResultsGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(42) });
+                    SearchResultsGrid.Children.Add(rowGrid);
+                }
+            }
+
+            if (SearchResultsPanel.Visibility == Visibility.Hidden)
+            {
+                SearchResultsPanel.Visibility = Visibility.Visible;
+                Storyboard SlideIn = Resources["SlideIn"] as Storyboard;
+                SearchResultsPanel.BeginStoryboard(SlideIn);
+                SearchResultsGrid.Visibility = Visibility.Visible;
+
+            }
+            else if (SearchResultsPanel.Visibility == Visibility.Visible)
+            {
+                SearchResultsPanel.Visibility = Visibility.Hidden;
+                Storyboard SlideOut = Resources["SlideOut"] as Storyboard;
+                SearchResultsPanel.BeginStoryboard(SlideOut);
+                SearchResultsGrid.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            (sender as Grid).Background = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            (sender as Grid).Background = new SolidColorBrush(Colors.Transparent);
+        }
+
+        private void ExtraMenu(object sender, RoutedEventArgs e)
+        {
+            if (SlideMenu.Opacity == 0)
+            {
+                SlideMenu.BeginStoryboard(SlideDown);
+            }
+            else
+            {
+                SlideMenu.BeginStoryboard(SlideUp);
+            }
+        }
+
+        private void ImageAwesome_MouseEnter(object sender, MouseEventArgs e)
+        {
+            (sender as FontAwesome.WPF.ImageAwesome).Foreground = new SolidColorBrush(Color.FromRgb(57, 172, 99));
+        }
+
+        private void ImageAwesome_MouseLeave(object sender, MouseEventArgs e)
+        {
+            (sender as FontAwesome.WPF.ImageAwesome).Foreground = new SolidColorBrush(Color.FromRgb(89, 89, 89));
+        }
+
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            TokenView.Visibility = Visibility.Hidden;
         }
     }
 }

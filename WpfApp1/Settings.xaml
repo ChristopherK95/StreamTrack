@@ -5,18 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1" xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
-        Title="Settings" WindowStyle="None" ResizeMode="NoResize" Height="300" Width="400">
+        Title="Settings" WindowStyle="None" ResizeMode="NoResize" 
+        Height="300" Width="400" WindowStartupLocation="Manual">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome ResizeBorderThickness="4" CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+
     <Grid Background="#1c2026" UseLayoutRounding="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#22272d">
+        <Grid Grid.Row="0" Background="#FF2C9C55">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="40"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0"
@@ -24,14 +30,14 @@
                         HorizontalAlignment="Stretch"
                         Background="Transparent"
                         Orientation="Horizontal">
-                <Label Content="Settings" Foreground="White" FontSize="16" FontWeight="DemiBold" Padding="5,0,0,0" VerticalContentAlignment="Center"/>
-                <fa:ImageAwesome Height="13" Icon="Cog" Foreground="White" Margin="5, 2, 0, 0"/>
+                <Label Content="Settings" Foreground="White" FontSize="26" FontWeight="DemiBold" Padding="5,0,0,0" VerticalContentAlignment="Center"/>
+                <fa:ImageAwesome Height="20" Icon="Cog" Foreground="White" Margin="5, 2, 0, 0"/>
             </StackPanel>
 
             <Button Style="{StaticResource ExitButton}"
                     Grid.Column="1"
                     Click="Exit">
-                <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede"/>
+                <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede" Margin="5"/>
             </Button>
         </Grid>
 
@@ -65,8 +71,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Value="60"
-                        Minimum="45"
-                        Maximum="100"
+                        Minimum="50"
+                        Maximum="80"
                         TickPlacement="BottomRight"
                         TickFrequency="5"
                         IsSnapToTickEnabled="True"
@@ -181,7 +187,7 @@
                 BorderThickness="0"
                 Foreground="White"
                 Click="Default"
-                Style="{StaticResource SaveButton}">
+                Style="{StaticResource SettingButton}">
             <Button.Effect>
                 <DropShadowEffect x:Name="DefaultButtonShadow" Color="Black" Direction="320" ShadowDepth="5"  Opacity="0.5"/>
             </Button.Effect>
@@ -198,7 +204,7 @@
                 BorderThickness="0"
                 Foreground="White"
                 Click="Save"
-                Style="{StaticResource SaveButton}">
+                Style="{StaticResource SettingButton}">
             <Button.Effect>
                 <DropShadowEffect x:Name="SaveButtonShadow" Color="Black" Direction="320" ShadowDepth="5"  Opacity="0.5"/>
             </Button.Effect>
