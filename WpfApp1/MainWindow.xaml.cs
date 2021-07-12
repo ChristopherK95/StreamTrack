@@ -945,9 +945,15 @@ namespace WpfApp1
                         string name = (((sender as FontAwesome.WPF.FontAwesome).Parent as Grid).Children[0] as Label).Content.ToString();
                         SearchResultsGrid.Children.Remove((sender as FontAwesome.WPF.FontAwesome).Parent as Grid);
                         SavedStreamers.Remove(SavedStreamers.Find(streamer => streamer.name == name));
+                        Streamers.Remove(Streamers.Find(streamer => streamer.user_name == name));
                         JsonList.Remove(JsonList.Find(item => item.Property("name").Value.ToString() == name));
 
                         SearchResultsGrid.RowDefinitions.Remove(SearchResultsGrid.RowDefinitions[Grid.GetRow((sender as FontAwesome.WPF.FontAwesome).Parent as Grid)]);
+
+                        for(int i = 0; i < SearchResultsGrid.Children.Count; i++)
+                        {
+                            Grid.SetRow(SearchResultsGrid.Children[i], i);
+                        }
 
                         List<StackPanel> list = new();
                         for(int i = 0; i < StreamerGrid.Children.Count; i++)
