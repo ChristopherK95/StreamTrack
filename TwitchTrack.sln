@@ -7,20 +7,31 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchTrack", "WpfApp1\Twit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileStore", "FileStore\FileStore.csproj", "{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{F8B08453-ED0F-4550-B717-F46D02F77B40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Debug|x86.ActiveCfg = Debug|x86
 		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Release|x86.ActiveCfg = Release|x86
+		{246789EC-BDEA-4393-8950-792A9D0D9F94}.Release|x86.Build.0 = Release|x86
 		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Debug|x86.ActiveCfg = Debug|x86
 		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D6961B5-2155-4B32-BCC2-DD4EF01FDB2F}.Release|x86.Build.0 = Release|Any CPU
+		{F8B08453-ED0F-4550-B717-F46D02F77B40}.Debug|Any CPU.ActiveCfg = Debug
+		{F8B08453-ED0F-4550-B717-F46D02F77B40}.Debug|x86.ActiveCfg = Debug
+		{F8B08453-ED0F-4550-B717-F46D02F77B40}.Release|Any CPU.ActiveCfg = Release
+		{F8B08453-ED0F-4550-B717-F46D02F77B40}.Release|x86.ActiveCfg = Release
+		{F8B08453-ED0F-4550-B717-F46D02F77B40}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

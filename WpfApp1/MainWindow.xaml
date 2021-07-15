@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:fa="http://schemas.fontawesome.io/icons/"
-        
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
         Title="StreamTrack" Height="468" Width="400"
         MinWidth="400" MinHeight="468"
@@ -62,14 +61,14 @@
             <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
                              From="-125" To="0"
                              Duration="0:0:0.3"/>
-            <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" From="0" To="1" Duration="0:0:0.3"/>
+            <!--<DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" From="0" To="1" Duration="0:0:0.3"/>-->
         </Storyboard>
 
         <Storyboard x:Key="SlideUp">
             <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
                              From="0" To="-125"
                              Duration="0:0:0.3"/>
-            <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" From="1" To="0" Duration="0:0:0.3"/>
+            <!--<DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" From="1" To="0" Duration="0:0:0.3"/>-->
         </Storyboard>
 
     </Window.Resources>
@@ -80,7 +79,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="#FF2C9C55" Panel.ZIndex="100">
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Background="#FF131721" Panel.ZIndex="100">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -89,31 +88,30 @@
                 <ColumnDefinition Width="40" Cursor="Hand"/>
             </Grid.ColumnDefinitions>
 
-            <Label x:Name="TitleLabel" Grid.Column="0" Content="TwitchTrack" FontSize="32" FontWeight="Bold" Padding="5, 0,0,0" Margin="0 -5 0 0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Stretch" MouseDown="Label_MouseDown"/>
+            <Label x:Name="TitleLabel" Grid.Column="0" Content="TwitchTrack" FontSize="26" FontWeight="DemiBold" Padding="5, 0,0,0" Margin="0 -5 0 0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Stretch" MouseDown="Label_MouseDown"/>
             <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" MouseDown="StackPanel_MouseDown" Background="Transparent" Orientation="Horizontal" Margin="5 0 0 0">
-                <!--<fa:ImageAwesome Icon="Twitch" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,0,0" Foreground="White"/>-->
-                <ContentControl Content="{StaticResource Logo}" Width="32" Height="32"/>
+                <ContentControl Content="{StaticResource Logo}" Width="26" Height="26"/>
             </StackPanel>
             <Button Style="{StaticResource SettingsButton}" Grid.Column="2" Click="ExtraMenu" ToolTip="Extra">
-                <fa:ImageAwesome Icon="Bars" Foreground="White" Margin="5"/>
+                <fa5:SvgAwesome Icon="Solid_Bars" Foreground="White" Margin="5"/>
             </Button>
             <Button Style="{StaticResource SettingsButton}" Grid.Column="3" Click="Minimize" ToolTip="Minimize" Cursor="Hand">
-                <fa:ImageAwesome Icon="Minus" Foreground="White" Margin="5" Cursor="Hand"/>
+                <fa5:SvgAwesome Icon="Solid_Minus" Foreground="White" Margin="5"/>
             </Button>
             <Button Style="{StaticResource ExitButton}" Grid.Column="4" Click="Exit">
-                <fa:ImageAwesome Icon="Times" Foreground="White" Margin="5"/>
+                <fa5:SvgAwesome Icon="Solid_Times" Foreground="White" Margin="5"/>
             </Button>
         </Grid>
 
-        <Border Grid.Row="1" BorderBrush="#FF2C9C55" BorderThickness="3 0 3 3">
+        <Border Grid.Row="1" BorderBrush="#FF131721" BorderThickness="3 0 3 3">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border x:Name="SlideMenu" Grid.RowSpan="2" Grid.Row="0" Opacity="0" Panel.ZIndex="100" BorderThickness="0" Height="Auto" Width="200" VerticalAlignment="Top" HorizontalAlignment="Right">
-                <StackPanel Background="#FF2C9C55">
+            <Border x:Name="SlideMenu" Grid.RowSpan="2" Grid.Row="0" Visibility="Hidden" Panel.ZIndex="100" BorderThickness="0" Height="Auto" Width="200" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <StackPanel Background="#FF131721">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -127,7 +125,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <fa:ImageAwesome Grid.Column="0" Icon="Cog" Foreground="White" Width="25" Margin="5"/>
+                            <fa5:SvgAwesome Grid.Column="0" Icon="Solid_Cogs" Foreground="White" Width="25" Margin="5"/>
                             <Label Grid.Column="1" Content="Settings" Foreground="White" FontSize="22" FontWeight="DemiBold" Width="Auto"/>
                         </Grid>
 
@@ -137,7 +135,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <fa:ImageAwesome Grid.Column="0" Icon="Bell" Foreground="White" Width="25" Margin="5"/>
+                            <fa5:SvgAwesome Grid.Column="0" Icon="Solid_Bell" Foreground="White" Width="25" Margin="5"/>
                             <Label Grid.Column="1" Content="Notifications" Foreground="White" FontSize="22" FontWeight="DemiBold" Width="Auto"/>
                         </Grid>
 
@@ -147,7 +145,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <fa:ImageAwesome Grid.Column="0" Icon="Key" Foreground="White" Width="25" Margin="5"/>
+                            <fa5:SvgAwesome Grid.Column="0" Icon="Solid_Key" Foreground="White" Width="25" Margin="5"/>
                             <Label Grid.Column="1" Content="Token" Foreground="White" FontSize="22" FontWeight="DemiBold" Width="Auto"/>
                         </Grid>
                     </Grid>
@@ -167,27 +165,19 @@
                     x:Name="MiscBar">
                 <Grid HorizontalAlignment="Stretch" Height="40">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Style="{StaticResource SearchBoxButton}"
-                            Grid.Column="0"
-                            Height="40"
-                            Width="60"
-                            Cursor="Hand"
-                            Click="Button_Click">
-                        <fa:ImageAwesome x:Name="AddButton" Icon="Plus" Width="25" Height="25" Foreground="White"/>
-                    </Button>
-                    <Button Style="{StaticResource SearchBoxButton}"
-                            Grid.Column="1"
-                            Height="40"
-                            Width="60"
-                            Cursor="Hand"
-                            Click="Edit">
-                        <fa:ImageAwesome Icon="Pencil" Width="25" Height="25" Foreground="White"/>
-                    </Button>
-                    <StackPanel Grid.Column="2" VerticalAlignment="Stretch" Height="40">
+                        <Button Style="{StaticResource SearchBoxButton}"
+                                Grid.Column="0"
+                                Height="40"
+                                Width="60"
+                                Cursor="Hand"
+                                ToolTip="Add streamer"
+                                Click="Button_Click">
+                            <fa5:SvgAwesome x:Name="AddButton" Icon="Solid_Plus" Width="25" Height="25" Foreground="White"/>
+                        </Button>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Stretch" Height="40">
                         <Grid VerticalAlignment="Stretch" Height="40">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -202,9 +192,9 @@
 
                             </Label>
 
-                            <fa:ImageAwesome Name="RefreshIcon"
+                            <fa5:SvgAwesome Name="RefreshIcon"
                                          Grid.Column="1" 
-                                         Icon="Refresh" 
+                                         Icon="Solid_SyncAlt" 
                                          Width="15" 
                                          Height="15" 
                                          Foreground="White" 
@@ -228,7 +218,7 @@
                              VerticalContentAlignment="Center"
                              VerticalAlignment="Stretch"
                              Visibility="Hidden"
-                             BorderThickness="0" KeyUp="SearchBox_KeyUp"/>
+                             BorderThickness="0" KeyUp="Search"/>
                 </Grid>
             </StackPanel>
 
@@ -268,7 +258,7 @@
                 </Grid>
             </StackPanel>
 
-            <fa:ImageAwesome x:Name="LoadCog" Icon="Cog" Spin="True" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
+            <fa5:SvgAwesome x:Name="LoadCog" Icon="Solid_Cog" Spin="False" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
 
             <Grid x:Name="TokenView" Grid.Row="0" Grid.RowSpan="2" Background="#22272d" Visibility="Hidden">
                 <Grid.RowDefinitions>
@@ -290,7 +280,7 @@
 
                 <Label Grid.Row="0" Content="Current Token" Foreground="White" FontWeight="DemiBold" FontSize="30" Padding="15, 0, 5, 0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0, 10, 0, 20"/>
 
-                <Border Grid.Row="1" BorderThickness="6 6 0 0" BorderBrush="#FF181C21" Background="#FF4A4B4D" HorizontalAlignment="Center" ClipToBounds="True" Margin="0, 10, 0, 0">
+                <Border Grid.Row="1" BorderThickness="6 6 0 0" BorderBrush="#FF181C21" Background="#FF4A4B4D" HorizontalAlignment="Stretch" ClipToBounds="True" Margin="40, 10, 40, 0">
                     <Label x:Name="CurrentTokenLabel" Grid.Row="1" Content=""  Foreground="White" FontSize="20" FontWeight="DemiBold" HorizontalAlignment="Center" Padding="10" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                 </Border>
 
@@ -307,13 +297,19 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Style="{StaticResource AuthButton}" Width="150" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Get Token" Foreground="White" FontSize="26" FontWeight="Bold" Click="GetToken">
+                        <Button Grid.Column="0" Style="{StaticResource AuthButton}" 
+                                Width="150" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                Content="Get Token" Foreground="White" FontSize="26" FontWeight="Bold" 
+                                Click="GetToken">
+                            
                         <Button.Effect>
                             <DropShadowEffect Opacity="0.5"/>
                         </Button.Effect>
                     </Button>
 
-                        <Button Grid.Column="1" Style="{StaticResource AuthButton}" Width="150" VerticalAlignment="Center" Content="Paste" HorizontalContentAlignment="Center" Foreground="White" FontSize="26" FontWeight="Bold" Click="PasteToken">
+                        <Button Grid.Column="1" Style="{StaticResource AuthButton}" 
+                                Width="150" VerticalAlignment="Center" HorizontalContentAlignment="Center"
+                                Content="Paste" Foreground="White" FontSize="26" FontWeight="Bold" Click="PasteToken">
                         <Button.Effect>
                             <DropShadowEffect Opacity="0.5"/>
                         </Button.Effect>
