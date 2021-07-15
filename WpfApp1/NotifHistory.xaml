@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1" xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
         Title="NotifHistory" Height="400" Width="300" 
         MinHeight="400" MinWidth="300" Background="#1c2026" 
@@ -71,7 +71,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#FF2C9C55">
+        <Grid Grid.Row="0" Background="#FF131721">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -81,13 +81,13 @@
             <Label Grid.Column="0" Content="Notifications" Foreground="White" FontSize="26" FontWeight="DemiBold" Padding="5,0,0,0" VerticalContentAlignment="Center" MouseDown="Drag"/>
 
             <StackPanel Grid.Column="1" Background="Transparent" MouseDown="Drag">
-                <fa:ImageAwesome Icon="Bell" Foreground="White" Height="20" Margin="8, 12, 0, 0" HorizontalAlignment="Left"/>
+                <fa5:SvgAwesome Icon="Solid_Bell" Foreground="White" Height="20" Margin="8, 12, 0, 0" HorizontalAlignment="Left"/>
             </StackPanel>
 
             <Button Style="{StaticResource ExitButton}"
                     Grid.Column="2"
                     Click="Exit">
-                <fa:ImageAwesome Icon="Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede" Margin="5"/>
+                <fa5:SvgAwesome Icon="Solid_Times" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#dedede" Margin="5"/>
             </Button>
         </Grid>
 

@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Media;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WpfApp1
 {
@@ -42,7 +34,7 @@ namespace WpfApp1
                     if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
                     {
                         LoadNewNotif(Notifications.NotificationList.Count - 1);
-                        if(ZeroNotifsLabel.Visibility == Visibility.Visible)
+                        if (ZeroNotifsLabel.Visibility == Visibility.Visible)
                         {
                             ZeroNotifsLabel.Visibility = Visibility.Hidden;
                             ClearButton.Visibility = Visibility.Visible;
@@ -87,7 +79,7 @@ namespace WpfApp1
             };
             Label TimeStamp = new()
             {
-                Content = $"{Notif.TimeStamp:HH}:{Notif.TimeStamp:mm)}",
+                Content = $"{Notif.TimeStamp:HH}:{Notif.TimeStamp:mm}",
                 FontSize = 20,
                 FontWeight = FontWeights.DemiBold,
                 FontFamily = new FontFamily("Consolas"),
