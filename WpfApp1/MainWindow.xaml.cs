@@ -493,8 +493,13 @@ namespace WpfApp1
                     FontFamily = new FontFamily("Consolas"),
                     Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor)),
                     Width = double.NaN,
-                    Padding = new Thickness(5, 2, 0, 0)
+                    Padding = new Thickness(5, 2, 0, 0),
+                    Cursor = Cursors.Hand
                 };
+
+                Name.MouseEnter += Hover;
+                Name.MouseLeave += LeaveHover;
+                Name.MouseUp += LinkToStream;
 
                 FontAwesome5.SvgAwesome Live = new()
                 {
@@ -577,7 +582,7 @@ namespace WpfApp1
                         AddHandler();
                     }
                 };
-                if(TitleContent.Text != "")
+                if (TitleContent.Text != "")
                 {
                     StreamerGrid.Children.Add(StreamerRowPanel);
                     Grid.SetRow(StreamerRowPanel, StreamerGrid.RowDefinitions.Count);
@@ -607,6 +612,22 @@ namespace WpfApp1
 
             Functions.LoadElements(StreamerGrid, OfflineGrid);
             StreamerSize = SavedStreamers.Count;
+        }
+
+        private void Hover(object sender, EventArgs e)
+        {
+            (sender as Label).Foreground = new SolidColorBrush(SetColor("#FF39AC63"));
+        }
+
+        private void LeaveHover(object sender, EventArgs e)
+        {
+            (sender as Label).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
+        }
+
+        private void LinkToStream(object sender, EventArgs e)
+        {
+            string name = (sender as Label).Content.ToString();
+            Process.Start(new ProcessStartInfo($"https://twitch.tv/{name}/") { UseShellExecute = true });
         }
 
         public static Color SetColor(string hexColor)
@@ -859,35 +880,6 @@ namespace WpfApp1
             if (SlideMenu.Opacity == 1)
             {
                 SlideMenu.BeginStoryboard(SlideUp);
-            }
-        }
-
-        private void Start(object sender, EventArgs e)
-        {
-            StreamTrackWindow.IsEnabled = true;
-            authKey = SettingsVariables.authKey;
-            if (authKey != "empty")
-            {
-                StartupStreamerData();
-                UpdateStatus();
-
-                _soundPlayer.Stream = FileStore.Resource1.NotificationSound;
-                _soundPlayer.Load();
-
-                dt = new();
-                dt.Interval = TimeSpan.FromSeconds(1);
-                dt.Tick += DtTicker;
-                dt.Start();
-
-                RefreshAnimation = new();
-                RefreshAnimation.Interval = TimeSpan.FromSeconds(1);
-                RefreshAnimation.Tick += RefreshTicker;
-
-                NotificationTimer.Interval = TimeSpan.FromSeconds(3);
-                NotificationTimer.Tick += NotifTicker;
-
-                TitleLabel.Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
-                StreamTrackWindow.Background = new SolidColorBrush(SetColor(SettingsVariables.themeColor));
             }
         }
 
