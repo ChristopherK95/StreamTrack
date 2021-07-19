@@ -60,6 +60,14 @@
 		<Version>1.0.0</Version>
 
 		<NuspecFile>$(SolutionDir)WpfApp1\ReleaseSpec.nuspec</NuspecFile>
+
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+		<SignAssembly>true</SignAssembly>
+
+		<AssemblyOriginatorKeyFile>TwitchTrack_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<Target Name="GenerateRelease" AfterTargets="AfterBuild" Condition="$(Configuration) == Release">
