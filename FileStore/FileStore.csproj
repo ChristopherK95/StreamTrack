@@ -5,17 +5,25 @@
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <ItemGroup>
     <None Remove="Resources\ClearIcon.png" />
     <None Remove="Resources\ClickSound.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.CommandLine" Version="5.9.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="squirrel.windows" Version="1.9.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,11 +11,11 @@ namespace StreamTrack
     /// </summary>
     public partial class RightClickWindow : Window
     {
-        StackPanel panel;
-        List<WpfApp1.SavedStreamer> SavedStreamers;
-        List<WpfApp1.Streamer> Streamers;
-        List<Newtonsoft.Json.Linq.JObject> JsonList;
-        string path;
+        private readonly StackPanel panel;
+        private readonly List<WpfApp1.SavedStreamer> SavedStreamers;
+        private readonly List<WpfApp1.Streamer> Streamers;
+        private readonly List<Newtonsoft.Json.Linq.JObject> JsonList;
+        private readonly string path;
 
         public RightClickWindow(StackPanel panel, Window window, List<WpfApp1.SavedStreamer> SavedStreamers, List<WpfApp1.Streamer> Streamers, List<Newtonsoft.Json.Linq.JObject> JsonList, string path)
         {

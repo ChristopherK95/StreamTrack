@@ -14,8 +14,8 @@ namespace WpfApp1
     {
         private Ellipse colorMarker;
         dynamic renderTargetBitmap;
-        Border ColorPreview;
-        Label TextPreview;
+        readonly Border ColorPreview;
+        readonly Label TextPreview;
         public ColorPalette(Border ColorPreview, Label TextPreview)
         {
             InitializeComponent();

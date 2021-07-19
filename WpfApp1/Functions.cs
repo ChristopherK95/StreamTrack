@@ -42,13 +42,13 @@ namespace WpfApp1
                     // Paints the Font in the live streamer list.
                     for (int i = 0; i < livePanelGrid.Children.Count; i++)
                     {
-                        (((((livePanelGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as WrapPanel).Children[0] as Label).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
+                        (((((livePanelGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[0] as Label).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
                         ((((((livePanelGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2));
                     }
                     // Paints the Font in the offline streamer list.
                     for (int i = 0; i < offlinePanelGrid.Children.Count; i++)
                     {
-                        (((((offlinePanelGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as WrapPanel).Children[0] as Label).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
+                        (((((offlinePanelGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[0] as Label).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
                         ((((((offlinePanelGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2));
                     }
                 }

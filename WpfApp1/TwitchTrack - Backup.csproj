@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5.0-windows</TargetFramework>
-		<UseWPF>true</UseWPF>
-		<ApplicationIcon>TwitchTrack64.ico</ApplicationIcon>
-		<!--<AssemblyName>StreamTrack</AssemblyName>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>TwitchTrack64.ico</ApplicationIcon>
+    <!--<AssemblyName>StreamTrack</AssemblyName>
     <RootNamespace>StreamTrack</RootNamespace>
     <Platforms>AnyCPU;x86</Platforms>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>TwitchTrack_TemporaryKey.pfx</AssemblyOriginatorKeyFile>-->
-	</PropertyGroup>
+  </PropertyGroup>
 
-	<!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -31,27 +31,27 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>-->
 
-	<ItemGroup>
-		<None Remove="ClearIcon.png" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="ClearIcon.png" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="FontAwesome5" Version="2.1.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="NuGet.CommandLine" Version="5.9.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="squirrel.windows" Version="1.9.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FontAwesome5" Version="2.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NuGet.CommandLine" Version="5.9.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="squirrel.windows" Version="1.9.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\FileStore\FileStore.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileStore\FileStore.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Resource Include="ClearIcon.png" />
-	</ItemGroup>
+  <ItemGroup>
+    <Resource Include="ClearIcon.png" />
+  </ItemGroup>
 
 	<PropertyGroup>
 		<NugetTools>$(PkgNuGet_CommandLine)\tools</NugetTools>
@@ -70,5 +70,5 @@
 		<Exec Command="$(NugetTools)\NuGet.exe pack $(NuspecFile) -Version $(Version) -Properties Configuration=Release -OutputDirectory $(SolutionDir)Deployment\GeneratedNugets" />
 		<Exec Command="$(SquirrelTools)\Squirrel.exe --releasify $(SolutionDir)Deployment\GeneratedNugets\@(ID).$(Version).nupkg --releaseDir=$(SolutionDir)Deployment\Releases" />
 	</Target>
-
+	
 </Project>

@@ -55,14 +55,14 @@ namespace WpfApp1
                 Content = NameText,
                 FontSize = 18,
                 FontWeight = FontWeights.DemiBold,
-                FontFamily = new FontFamily("Consolas"),
+                FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Colors.White),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Stretch,
                 VerticalContentAlignment = VerticalAlignment.Top,
             };
-            Run FillerText = new() { Text = "Went ", Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)) };
-            Run Status = new() { Text = Notif.Status, Foreground = new SolidColorBrush(Notif.Status == "Offline" ? Color.FromRgb(87, 87, 87) : Color.FromRgb(233, 25, 22)) };
+            Run FillerText = new() { Text = "Went ", Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)), FontFamily = new FontFamily("Segoe UI") };
+            Run Status = new() { Text = Notif.Status, Foreground = new SolidColorBrush(Notif.Status == "Offline" ? Color.FromRgb(87, 87, 87) : Color.FromRgb(233, 25, 22)), FontFamily = new FontFamily("Segoe UI") };
             TextBlock Text = new();
             Text.Inlines.Add(FillerText);
             Text.Inlines.Add(Status);
@@ -71,7 +71,7 @@ namespace WpfApp1
                 Content = Text,
                 FontSize = 14,
                 FontWeight = FontWeights.DemiBold,
-                FontFamily = new FontFamily("Consolas"),
+                FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -94,7 +94,7 @@ namespace WpfApp1
                 Content = "Click to delete",
                 FontSize = 12,
                 FontWeight = FontWeights.DemiBold,
-                FontFamily = new FontFamily("Consolas"),
+                FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Padding = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
