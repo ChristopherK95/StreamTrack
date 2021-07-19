@@ -35,7 +35,8 @@ namespace WpfApp1
 
         // Lists.
         readonly private List<Streamer> Streamers = new();
-        private List<Streamer> RecentStreamers = new();
+        readonly private List<Streamer> OnlineStreamers = new();
+        readonly private List<Streamer> OfflineStreamers = new();
         readonly private List<StreamerSearchResult> SearchResults = new();
         private List<SavedStreamer> SavedStreamers = new();
         private List<Newtonsoft.Json.Linq.JObject> JsonList = new();
@@ -45,14 +46,11 @@ namespace WpfApp1
         readonly List<Grid> PanelList = new();
         readonly List<StackPanel> RowPanel = new();
 
-        public int increment = 0;
-
         readonly HttpClient httpClient = new();
         private delegate void Load_result_panels_callback(int i);
         Grid StreamerGrid;
         Grid OfflineGrid;
         StreamWriter FileWriter;
-        DispatcherTimer dt;
         DispatcherTimer RefreshAnimation;
         readonly DispatcherTimer NotificationTimer = new();
 
@@ -145,16 +143,16 @@ namespace WpfApp1
             _soundPlayer.Stream = FileStore.Resource1.NotificationSound;
             _soundPlayer.Load();
 
-            dt = new();
-            dt.Interval = TimeSpan.FromSeconds(1);
-            dt.Tick += DtTicker;
-            dt.Start();
+            //dt = new();
+            //dt.Interval = TimeSpan.FromSeconds(1);
+            //dt.Tick += DtTicker;
+            //dt.Start();
 
             RefreshAnimation = new();
             RefreshAnimation.Interval = TimeSpan.FromSeconds(1);
             RefreshAnimation.Tick += RefreshTicker;
 
-            NotificationTimer.Interval = TimeSpan.FromSeconds(3);
+            NotificationTimer.Interval = TimeSpan.FromSeconds(5);
             NotificationTimer.Tick += NotifTicker;
 
             TitleLabel.Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor));
@@ -175,13 +173,14 @@ namespace WpfApp1
             RowGrid.ColumnDefinitions.Add(StatusCol);
 
             NotificationGrid.Children.Add(RowGrid);
-            Grid.SetRow(RowGrid, 0);
+            Grid.SetRow(RowGrid, NotificationGrid.Children.Count);
 
-            Label StreamerName = new() 
+            Label StreamerName = new()
             {
                 Content = streamer,
                 FontSize = 16,
                 FontWeight = FontWeights.Bold,
+                FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Colors.White),
                 Padding = new Thickness(5, 0, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -194,6 +193,7 @@ namespace WpfApp1
             {
                 Content = " has gone ",
                 FontSize = 16,
+                FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Colors.White),
                 Padding = new Thickness(0),
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -207,6 +207,7 @@ namespace WpfApp1
                 Content = status == "live" ? "LIVE" : "OFFLINE",
                 FontSize = 16,
                 FontWeight = FontWeights.Bold,
+                FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(status == "live" ? Color.FromRgb(233, 25, 22) : Color.FromRgb(117, 117, 117)),
                 Padding = new Thickness(0),
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -216,21 +217,23 @@ namespace WpfApp1
             Grid.SetColumn(Status, 2);
         }
         
-        private void DtTicker(object sender, EventArgs e)
-        {
-            increment += 1;
-            TimerLabel.Content = "Updated " + increment + "s ago";
-        }
+        //private void DtTicker(object sender, EventArgs e)
+        //{
+        //    increment += 1;
+        //    TimerLabel.Content = "Updated " + increment + "s ago";
+        //}
 
         private void RefreshTicker(object sender, EventArgs e)
         {
             RefreshIcon.Spin = false;
             RefreshAnimation.Stop();
             RefreshIcon.Visibility = Visibility.Collapsed;
+            TimerLabel.Visibility = Visibility.Hidden;
         }
 
         private void NotifTicker(object sender, EventArgs e)
         {
+            NotifGridBorder.Visibility = Visibility.Hidden;
             NotificationGrid.Children.Clear();
             NotificationGrid.RowDefinitions.Clear();
             NotificationTimer.Stop();
@@ -240,19 +243,19 @@ namespace WpfApp1
         {
             while (true)
             {
-                await Task.Delay(TimeSpan.FromMinutes(1));
+                await Task.Delay(TimeSpan.FromSeconds(60));
+                TimerLabel.Content = "Updating";
+                TimerLabel.Visibility = Visibility.Visible;
                 RefreshIcon.Visibility = Visibility.Visible;
                 RefreshIcon.Spin = true;
                 RefreshAnimation.Start();
-                RecentStreamers = Streamers.ToList();
                 UpdateStreamerUI();
-                increment = 0;
             };
         }
 
         public async void UpdateStreamerUI()
         {
-            if(SavedStreamers.Count == 0)
+            if (SavedStreamers.Count == 0)
             {
                 return;
             }
@@ -260,8 +263,10 @@ namespace WpfApp1
             dynamic ObjectData = Newtonsoft.Json.JsonConvert.DeserializeObject(FetchedData);
             dynamic LiveStreamers = ObjectData["data"];
 
+            List<Streamer> StreamersOld = new();
             if (Streamers.Count > 0)
             {
+                StreamersOld = Streamers.ToList();
                 Streamers.Clear();
             }
             foreach (dynamic s in LiveStreamers)
@@ -270,55 +275,59 @@ namespace WpfApp1
                 Streamer Streamer = Newtonsoft.Json.JsonConvert.DeserializeObject<Streamer>(StreamerString);
                 Streamers.Add(Streamer);
             }
-            
-            List<List<Streamer>> offset = GetStatusChange();
 
-            if(offset != null)
+            List<Streamer> onlineDiff = Streamers.Except(StreamersOld).ToList();
+            List<Streamer> offlineDiff = StreamersOld.Except(Streamers).ToList();
+
+            if (onlineDiff.Count != 0 || offlineDiff.Count != 0)
             {
-                List<Streamer> offline = offset[0];
-                List<Streamer> online = offset[1];
 
-                for (int i = 0; i < offline.Count; i++)
+                if (onlineDiff.Count > 0)
                 {
-                    // Creates a notification of the streamer that went offline.
-                    for(int j = 0; j < PanelList.Count; j++)
+                    for(int i = 0; i < onlineDiff.Count; i++)
                     {
-                        
-                        if(offline[i].user_name == (PanelList[j].Children[0] as WrapPanel).Children[0].GetValue(ContentProperty).ToString())
+                        for (int j = 0; j < OfflineGrid.Children.Count; j++)
                         {
-                            ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = OfflineBrush;
-                            (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = "";
-                            
-                            StackPanel p = RowPanel.Find(panel => (string)panel.Tag == offline[i].user_name);
-
-                            StreamerGrid.Children.Remove(p);
-                            OfflineGrid.Children.Add(p);
-
-                            break;
+                            if ((OfflineGrid.Children[j] as StackPanel).Tag.ToString() == onlineDiff[i].user_name)
+                            {
+                                var streamer = OfflineGrid.Children[j];
+                                ((((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = onlineDiff[i].title;
+                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = LiveBrush;
+                                OfflineGrid.Children.RemoveAt(j);
+                                StreamerGrid.Children.Add(streamer);
+                                Notification(onlineDiff[i].user_name, "live");
+                                Notifications.AddNotifs(onlineDiff[i].user_name, "Live");
+                                break;
+                            } 
                         }
                     }
+                    
                 }
-                for (int i = 0; i < online.Count; i++)
+                if (offlineDiff.Count > 0)
                 {
-                    // Creates a notification of the streamer that went live.
-                    for (int j = 0; j < PanelList.Count; j++)
+                    for(int i = 0; i < offlineDiff.Count; i++)
                     {
-                        if (online[i].user_name == (PanelList[j].Children[0] as WrapPanel).Children[0].GetValue(ContentProperty).ToString())
+                        for (int j = 0; j < StreamerGrid.Children.Count; j++)
                         {
-                            ((PanelList[j].Children[0] as WrapPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = LiveBrush;
-                            (((PanelList[j].Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = online[i].title;
-
-                            StackPanel p = RowPanel.Find(panel => (string)panel.Tag == online[i].user_name);
-
-                            OfflineGrid.Children.Remove(p);
-                            StreamerGrid.Children.Add(p);
-
-                            break;
+                            if ((StreamerGrid.Children[j] as StackPanel).Tag.ToString() == offlineDiff[i].user_name)
+                            {
+                                var streamer = StreamerGrid.Children[j];
+                                ((((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = "";
+                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = OfflineBrush;
+                                StreamerGrid.Children.RemoveAt(j);
+                                OfflineGrid.Children.Add(streamer);
+                                Notification(offlineDiff[i].user_name, "");
+                                Notifications.AddNotifs(offlineDiff[i].user_name, "Offline");
+                                break;
+                            }
                         }
                     }
                 }
 
                 ReOrder();
+                _soundPlayer.Play();
+                NotifGridBorder.Visibility = Visibility.Visible;
+                NotificationTimer.Start();
             }
         }
 
@@ -404,40 +413,6 @@ namespace WpfApp1
             return await am.ReadToEndAsync();
         }
 
-        public List<List<Streamer>> GetStatusChange()
-        {
-            if (RecentStreamers.Count > 0 && !RecentStreamers.SequenceEqual(Streamers))
-            {
-                List<Streamer> offline = RecentStreamers.Except(Streamers).ToList();
-                List<Streamer> online = Streamers.Except(RecentStreamers).ToList();
-
-                for (int i = 0; i < offline.Count; i++)
-                {
-                    // Creates a notification of the streamer that went offline.
-                    Notification(offline[i].user_name, "");
-                    Notifications.AddNotifs(offline[i].user_name, "Offline");
-                }
-                for (int i = 0; i < online.Count; i++)
-                {
-                    // Creates a notification of the streamer that went live.
-                    Notification(online[i].user_name, "live");
-                    Notifications.AddNotifs(online[i].user_name, "Live");
-                }
-                _soundPlayer.Play();
-                NotificationTimer.Start();
-                List<List<Streamer>> offset = new();
-                
-                offset.Add(offline);
-                offset.Add(online);
-                return offset;
-            }
-            else
-            {
-                return null;
-            }
-            
-        }
-
         // Loads all saved streamers from the save file and checks their live status, then renders them on the grid.
         public async void LoadStreamers()
         {
@@ -490,7 +465,7 @@ namespace WpfApp1
                     Content = SavedStreamers[i].name,
                     FontSize = 30,
                     FontWeight = FontWeights.Bold,
-                    FontFamily = new FontFamily("Consolas"),
+                    FontFamily = new FontFamily("Segoe UI"),
                     Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor)),
                     Width = double.NaN,
                     Padding = new Thickness(5, 2, 0, 0),
@@ -515,7 +490,8 @@ namespace WpfApp1
                 {
                     Text = "",
                     FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
-                    FontFamily = new FontFamily("Arial Black"),
+                    FontFamily = new FontFamily("Segoe UI"),
+                    FontWeight = FontWeights.Bold,
                     Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2)),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     HorizontalAlignment = HorizontalAlignment.Stretch
@@ -549,8 +525,9 @@ namespace WpfApp1
                 Rows.RowDefinitions.Add(UpperRow);
                 Rows.RowDefinitions.Add(LowerRow);
 
-                WrapPanel TextPanel = new()
+                StackPanel TextPanel = new()
                 {
+                    Orientation = Orientation.Horizontal,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
                 Rows.Children.Add(TextPanel);

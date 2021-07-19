@@ -184,11 +184,12 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Label Name="TimerLabel"
-                               Grid.Column="0"
-                               Content="Updated 0s ago"
-                               Foreground="#FFCCCCCC"
-                               HorizontalContentAlignment="Right"
-                               VerticalAlignment="Center">
+                                   Grid.Column="0"
+                                   Content="Updated 0s ago"
+                                   Foreground="#FFCCCCCC"
+                                   HorizontalContentAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Visibility="Hidden">
 
                             </Label>
 
@@ -253,12 +254,18 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <StackPanel Grid.Row="1" Height="auto" Panel.ZIndex="100" Background="#2b2f36" VerticalAlignment="Top">
-                <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch">
-                </Grid>
-            </StackPanel>
+                <Border x:Name="NotifGridBorder" Grid.Row="1" VerticalAlignment="Top" Panel.ZIndex="100" BorderBrush="#FF131721" BorderThickness="2" Height="Auto" Visibility="Hidden">
+                    <StackPanel Height="auto" Background="#2b2f36" VerticalAlignment="Top">
+                        <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch">
+                        </Grid>
+                    </StackPanel>
 
-            <fa5:SvgAwesome x:Name="LoadCog" Icon="Solid_Cog" Spin="False" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
+                    <Border.Effect>
+                        <DropShadowEffect Opacity="0.8" BlurRadius="10"/>
+                    </Border.Effect>
+                </Border>
+
+                <fa5:SvgAwesome x:Name="LoadCog" Icon="Solid_Cog" Spin="False" SpinDuration="2" Height="100" Width="100" Foreground="Gray" Grid.Row="1" Visibility="Hidden" Panel.ZIndex="1"/>
 
             <Grid x:Name="TokenView" Grid.Row="0" Grid.RowSpan="2" Background="#22272d" Visibility="Hidden">
                 <Grid.RowDefinitions>
