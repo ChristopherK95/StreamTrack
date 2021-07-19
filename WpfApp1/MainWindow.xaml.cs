@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Squirrel;
+using TwitchTrack;
 
 namespace WpfApp1
 {
@@ -46,6 +48,8 @@ namespace WpfApp1
         readonly List<Grid> PanelList = new();
         readonly List<StackPanel> RowPanel = new();
 
+        UpdateManager manager;
+
         readonly HttpClient httpClient = new();
         private delegate void Load_result_panels_callback(int i);
         Grid StreamerGrid;
@@ -65,6 +69,9 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+
+            Loaded += MainWindow_Loaded;
+            TitleLabel.Content = "Reached";
             CurrentTokenLabel.Content = SettingsVariables.authKey;
 
             SlideDown = Resources["SlideDown"] as Storyboard;
@@ -84,6 +91,22 @@ namespace WpfApp1
                 authKey = SettingsVariables.authKey;
                 ValidateToken();
             }
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            manager = await UpdateManager.GitHubUpdateManager(@"https://github.com/ChristopherK95/StreamTrack");
+            var currentVersion = manager.CurrentlyInstalledVersion();
+            var updateInfo = await manager.CheckForUpdate();
+            //if(updateInfo.ReleasesToApply.Count > 0 || updateInfo.ReleasesToApply.Count == 0)
+            //{
+            //    TitleLabel.Content = "Reached";
+            //    UpdateWindow updateWindow = new(currentVersion, updateInfo.ReleasesToApply[updateInfo.ReleasesToApply.Count].Version);
+            //    updateWindow.Show();
+            //}
+            TitleLabel.Content = "Reached";
+            UpdateWindow updateWindow = new(currentVersion, updateInfo.ReleasesToApply[updateInfo.ReleasesToApply.Count].Version);
+            updateWindow.Show();
         }
 
         private async void ValidateToken()
