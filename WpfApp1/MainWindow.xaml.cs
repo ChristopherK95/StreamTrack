@@ -71,7 +71,7 @@ namespace WpfApp1
             InitializeComponent();
 
             Loaded += MainWindow_Loaded;
-            TitleLabel.Content = "Reached";
+            
             CurrentTokenLabel.Content = SettingsVariables.authKey;
 
             SlideDown = Resources["SlideDown"] as Storyboard;
@@ -98,15 +98,11 @@ namespace WpfApp1
             manager = await UpdateManager.GitHubUpdateManager(@"https://github.com/ChristopherK95/StreamTrack");
             var currentVersion = manager.CurrentlyInstalledVersion();
             var updateInfo = await manager.CheckForUpdate();
-            //if(updateInfo.ReleasesToApply.Count > 0 || updateInfo.ReleasesToApply.Count == 0)
-            //{
-            //    TitleLabel.Content = "Reached";
-            //    UpdateWindow updateWindow = new(currentVersion, updateInfo.ReleasesToApply[updateInfo.ReleasesToApply.Count].Version);
-            //    updateWindow.Show();
-            //}
-            TitleLabel.Content = "Reached";
-            UpdateWindow updateWindow = new(currentVersion, updateInfo.ReleasesToApply[updateInfo.ReleasesToApply.Count].Version);
-            updateWindow.Show();
+            if (updateInfo.ReleasesToApply.Count > 0)
+            {
+                UpdateWindow updateWindow = new(currentVersion, updateInfo.ReleasesToApply[updateInfo.ReleasesToApply.Count - 1].Version, manager);
+                updateWindow.Show();
+            }
         }
 
         private async void ValidateToken()
