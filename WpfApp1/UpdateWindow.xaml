@@ -6,10 +6,7 @@
         mc:Ignorable="d"
         Title="UpdateWindow" Height="350" Width="400" ResizeMode="NoResize" WindowStyle="None" Background="#22272d">
 
-    <Border>
-        <Border.Effect>
-            <DropShadowEffect />
-        </Border.Effect>
+    <Border BorderBrush="Gray" BorderThickness="2">
         <Grid UseLayoutRounding="True">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -20,12 +17,12 @@
 
             <Label x:Name="CurrentVersionLabel" Grid.Row="0" Content="Version: " Foreground="White" FontSize="26" FontWeight="Bold" FontFamily="Segoe UI" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
             <Label x:Name="AvailableVersionLabel" Grid.Row="1" Content="Available: " Foreground="White" FontSize="26" FontWeight="Bold" FontFamily="Segoe UI" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Button Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource SettingButton}" Width="150" Height="50" Foreground="White" FontSize="26" FontFamily="Segoe UI" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Update">
+            <Button Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource SettingButton}" Width="150" Height="50" Foreground="White" FontSize="26" FontFamily="Segoe UI" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Update" Click="Update">
                 <Button.Effect>
                     <DropShadowEffect Opacity="0.3" ShadowDepth="10"/>
                 </Button.Effect>
             </Button>
-            <Button Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource SettingButton}" Width="150" Height="50" Foreground="White" FontSize="26" FontFamily="Segoe UI" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Cancel">
+            <Button Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource SettingButton}" Width="150" Height="50" Foreground="White" FontSize="26" FontFamily="Segoe UI" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Close" Click="Cancel">
                 <Button.Effect>
                     <DropShadowEffect Opacity="0.3" ShadowDepth="10"/>
                 </Button.Effect>
