@@ -424,10 +424,23 @@ namespace WpfApp1
             hc.DefaultRequestHeaders.Add("Authorization", "Bearer " + authKey);
             hc.DefaultRequestHeaders.Add("Client-Id", "p4dvj9r4r5jnih8uq373imda1n2v0j");
 
-            Task<Stream> Result = hc.GetStreamAsync(url);
+            HttpResponseMessage response = new();
+            response.StatusCode = 0;
 
-            Stream vs = await Result;
-            StreamReader am = new(vs);
+            while (!response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    response = await hc.GetAsync(url);
+                }
+                catch
+                {
+                    Debug.WriteLine("Failed Request");
+                }
+            }
+            
+            var vs = response.Content;
+            StreamReader am = new(vs.ReadAsStream());
 
             return await am.ReadToEndAsync();
         }
