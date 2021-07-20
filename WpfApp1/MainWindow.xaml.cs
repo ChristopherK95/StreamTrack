@@ -162,11 +162,6 @@ namespace WpfApp1
             _soundPlayer.Stream = FileStore.Resource1.NotificationSound;
             _soundPlayer.Load();
 
-            //dt = new();
-            //dt.Interval = TimeSpan.FromSeconds(1);
-            //dt.Tick += DtTicker;
-            //dt.Start();
-
             RefreshAnimation = new();
             RefreshAnimation.Interval = TimeSpan.FromSeconds(1);
             RefreshAnimation.Tick += RefreshTicker;
@@ -235,13 +230,6 @@ namespace WpfApp1
             RowGrid.Children.Add(Status);
             Grid.SetColumn(Status, 2);
         }
-        
-        //private void DtTicker(object sender, EventArgs e)
-        //{
-        //    increment += 1;
-        //    TimerLabel.Content = "Updated " + increment + "s ago";
-        //}
-
         private void RefreshTicker(object sender, EventArgs e)
         {
             RefreshIcon.Spin = false;
