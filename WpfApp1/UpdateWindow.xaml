@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
         mc:Ignorable="d"
         Title="UpdateWindow" Height="350" Width="400" ResizeMode="NoResize" WindowStyle="None" Background="#22272d">
 
@@ -16,7 +17,8 @@
             </Grid.RowDefinitions>
 
             <Label x:Name="CurrentVersionLabel" Grid.Row="0" Content="Version: " Foreground="White" FontSize="26" FontWeight="Bold" FontFamily="Segoe UI" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="AvailableVersionLabel" Grid.Row="1" Content="Available: " Foreground="White" FontSize="26" FontWeight="Bold" FontFamily="Segoe UI" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <TextBlock x:Name="AvailableVersionLabel" Grid.Row="1" Text="Available: " Foreground="White" FontSize="26" FontWeight="Bold" FontFamily="Segoe UI" TextAlignment="Center" TextWrapping="Wrap" Padding="20 0 20 0"/>
+            <fa5:SvgAwesome x:Name="LoadingCog" Grid.Row="1" Icon="Solid_Cog" Foreground="White" Spin="True" Visibility="Hidden" Height="70"/>
             <Button Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource SettingButton}" Width="150" Height="50" Foreground="White" FontSize="26" FontFamily="Segoe UI" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Update" Click="Update">
                 <Button.Effect>
                     <DropShadowEffect Opacity="0.3" ShadowDepth="10"/>
