@@ -70,6 +70,10 @@
 		<AssemblyOriginatorKeyFile>TwitchTrack_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+
 	<Target Name="GenerateRelease" AfterTargets="AfterBuild" Condition="$(Configuration) == Release">
 		<XmlPeek XmlInputPath="$(NuspecFile)" Query="/package/metadata/id/text()">
 			<Output TaskParameter="Result" ItemName="ID" />
