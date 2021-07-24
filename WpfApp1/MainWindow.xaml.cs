@@ -297,7 +297,7 @@ namespace WpfApp1
                             if ((OfflineGrid.Children[j] as StackPanel).Tag.ToString() == onlineDiff[i].user_name)
                             {
                                 var streamer = OfflineGrid.Children[j];
-                                ((((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = onlineDiff[i].title;
+                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content = onlineDiff[i].title;
                                 (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = LiveBrush;
                                 OfflineGrid.Children.RemoveAt(j);
                                 StreamerGrid.Children.Add(streamer);
@@ -318,7 +318,7 @@ namespace WpfApp1
                             if ((StreamerGrid.Children[j] as StackPanel).Tag.ToString() == offlineDiff[i].user_name)
                             {
                                 var streamer = StreamerGrid.Children[j];
-                                ((((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content as TextBlock).Text = "";
+                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content = "";
                                 (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = OfflineBrush;
                                 StreamerGrid.Children.RemoveAt(j);
                                 OfflineGrid.Children.Add(streamer);
