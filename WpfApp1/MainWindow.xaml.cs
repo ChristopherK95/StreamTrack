@@ -453,10 +453,11 @@ namespace WpfApp1
 
             StreamerGrid = new() { Name = "StreamerGrid", Height = Double.NaN, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Stretch };
             OfflineGrid = new() { Name = "OfflineGrid", HorizontalAlignment = HorizontalAlignment.Stretch };
-
+            var height = SettingsVariables.height;
             for (int i = 0; i < SavedStreamers.Count; i++)
             {
-                RowDefinition StreamerRow = new() { Height = new GridLength(SettingsVariables.height), Tag = SavedStreamers[i].name };
+                RowDefinition StreamerRow = new() { Tag = SavedStreamers[i].name };
+                
                 StreamerRowList.Add(StreamerRow);
 
                 Grid RowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
@@ -464,10 +465,11 @@ namespace WpfApp1
                 ColumnDefinition NameCol = new();
                 RowColumns.ColumnDefinitions.Add(ImgCol);
                 RowColumns.ColumnDefinitions.Add(NameCol);
-                StackPanel StreamerRowPanel = new() { Tag = SavedStreamers[i].name };
+                StackPanel StreamerRowPanel = new() { Tag = SavedStreamers[i].name, Height = SettingsVariables.height };
+                
                 RowPanel.Add(StreamerRowPanel);
                 StreamerRowPanel.Children.Add(RowColumns);
-
+                
                 Image ProfileImg = new()
                 {
                     Width = SettingsVariables.height,
@@ -483,7 +485,7 @@ namespace WpfApp1
                 Label Name = new()
                 {
                     Content = SavedStreamers[i].name,
-                    FontSize = 30,
+                    FontSize = height == 60 ? 24 : height == 65 ? 26 : height == 70 ? 28 : 30,
                     FontWeight = FontWeights.Bold,
                     FontFamily = new FontFamily("Segoe UI"),
                     Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor)),
@@ -499,56 +501,67 @@ namespace WpfApp1
                 FontAwesome5.SvgAwesome Live = new()
                 {
                     Icon = FontAwesome5.EFontAwesomeIcon.Solid_Circle,
-                    Height = 15,
+                    Height = height == 60 ? 10 : height == 65 ? 12 : height == 70 ? 14 : 16,
                     Foreground = OfflineBrush,
-                    Width = 15,
+                    Width = height == 60 ? 10 : height == 65 ? 12 : height == 70 ? 14 : 16,
                     Margin = new Thickness(5, 0, 0, 0),
                     ToolTip = "Offline"
                 };
 
-                TextBlock TitleContent = new()
-                {
-                    Text = "",
-                    FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
-                    FontFamily = new FontFamily("Segoe UI"),
-                    FontWeight = FontWeights.Bold,
-                    Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2)),
-                    TextTrimming = TextTrimming.CharacterEllipsis,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
-                };
-                TitleTextList.Add(TitleContent);
+                //TextBlock SectionContent = new()
+                //{
+                //    Text = "",
+                //    //FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
+                //    FontSize = 16,
+                //    FontFamily = new FontFamily("Segoe UI"),
+                //    FontWeight = FontWeights.Bold,
+                //    Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2)),
+                //    TextTrimming = TextTrimming.CharacterEllipsis,
+                //    HorizontalAlignment = HorizontalAlignment.Stretch
+                //};
+                //TitleTextList.Add(SectionContent);
 
-                Label Title = new()
+                Label Section = new()
                 {
-                    VerticalAlignment = VerticalAlignment.Bottom,
+                    //VerticalAlignment = VerticalAlignment.Bottom,
+                    //Padding = new Thickness(5, 0, 0, 0),
+                    //Content = SectionContent,
+                    Content = "",
+                    Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                     Padding = new Thickness(5, 0, 0, 0),
-                    Content = TitleContent,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalContentAlignment = VerticalAlignment.Bottom
+                    FontSize = height == 14 ? 10 : height == 65 ? 16 : height == 70 ? 18 : 20,
+                    FontFamily = new FontFamily("Segoe UI"),
+                    FontWeight = FontWeights.DemiBold,
+                    VerticalContentAlignment = VerticalAlignment.Top
+                    //HorizontalAlignment = HorizontalAlignment.Stretch,
+                    //VerticalContentAlignment = VerticalAlignment.Bottom
                 };
 
                 for (int j = 0; j < Streamers.Count; j++)
                 {
                     if(SavedStreamers[i].id == Streamers[j].user_id)
                     {
-                        TitleContent.Text = Streamers[j].title;
-                        TitleContent.ToolTip = Streamers[j].title;
+                        //SectionContent.Text = Streamers[j].game_name;
+                        //SectionContent.ToolTip = Streamers[j].title;
+                        Section.Content = Streamers[j].game_name;
+                        Section.ToolTip = Streamers[j].title;
                         Live.Foreground = LiveBrush;
                         Live.ToolTip = "Live";
                     }
                 }
-                
+
                 Grid Rows = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
                 PanelList.Add(Rows);
-                RowDefinition UpperRow = new() ;
-                RowDefinition LowerRow = new() ;
+                RowDefinition UpperRow = new();
+                RowDefinition LowerRow = new();
                 Rows.RowDefinitions.Add(UpperRow);
                 Rows.RowDefinitions.Add(LowerRow);
 
                 StackPanel TextPanel = new()
                 {
                     Orientation = Orientation.Horizontal,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch
                 };
                 Rows.Children.Add(TextPanel);
                 Grid.SetRow(TextPanel, 0);
@@ -556,7 +569,7 @@ namespace WpfApp1
                 WrapPanel TitlePanel = new()
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Top
+                    VerticalAlignment = VerticalAlignment.Stretch
                 };
                 Rows.Children.Add(TitlePanel);
                 Grid.SetRow(TitlePanel, 1);
@@ -564,22 +577,74 @@ namespace WpfApp1
                 TextPanel.Children.Add(Name);
                 TextPanel.Children.Add(Live);
 
-                TitlePanel.Children.Add(Title);
+                TitlePanel.Children.Add(Section);
                 
                 RowColumns.Children.Add(Rows);
                 Grid.SetColumn(Rows, 1);
 
+                StreamerRowPanel.SizeChanged += (sender, e) =>
+                {
+                    var name = ((((sender as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[0] as Label;
+                    var liveIcon = ((((sender as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[1] as FontAwesome5.SvgAwesome;
+                    var section = ((((sender as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label;
+                    var newHeight = (sender as StackPanel).Height;
+                    switch (newHeight)
+                    {
+                        case 50:
+                            name.FontSize = 20;
+                            liveIcon.Height = 8;
+                            liveIcon.Width = 8;
+                            section.FontSize = 12;
+                            break;
+                        case 55:
+                            name.FontSize = 24;
+                            liveIcon.Height = 10;
+                            liveIcon.Width = 10;
+                            section.FontSize = 14;
+                            break;
+                        case 60:
+                            name.FontSize = 26;
+                            liveIcon.Height = 12;
+                            liveIcon.Width = 12;
+                            section.FontSize = 16;
+                            break;
+                        case 65:
+                            name.FontSize = 28;
+                            liveIcon.Height = 14;
+                            liveIcon.Width = 14;
+                            section.FontSize = 18;
+                            break;
+                        case 70:
+                            name.FontSize = 30;
+                            liveIcon.Height = 16;
+                            liveIcon.Width = 16;
+                            section.FontSize = 20;
+                            break;
+                        case 75:
+                            name.FontSize = 32;
+                            liveIcon.Height = 18;
+                            liveIcon.Width = 18;
+                            section.FontSize = 22;
+                            break;
+                        case 80:
+                            name.FontSize = 34;
+                            liveIcon.Height = 20;
+                            liveIcon.Width = 20;
+                            section.FontSize = 24;
+                            break;
+                    }
+                };
                 StreamerRowPanel.MouseUp += (sender, e) =>
                 {
                     if (e.ChangedButton == MouseButton.Right)
                     {
-                        info = new(sender as StackPanel, this, SavedStreamers, Streamers, JsonList, path);
+                        info = new(sender as StackPanel, this, SavedStreamers, Streamers, JsonList, path, RepaintStreamers);
                         info.Show();
                         Mouse.Capture(this, CaptureMode.None);
                         AddHandler();
                     }
                 };
-                if (TitleContent.Text != "")
+                if (Section.Content.ToString() != "")
                 {
                     StreamerGrid.Children.Add(StreamerRowPanel);
                     Grid.SetRow(StreamerRowPanel, StreamerGrid.RowDefinitions.Count);
@@ -593,14 +658,7 @@ namespace WpfApp1
                 }
             }
 
-            for (int i = 0; i < StreamerGrid.Children.Count; i++)
-            {
-                StreamerGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(StreamerGrid.Children[i]) % 2 == 0 ? SetColor(SettingsVariables.themeColor) : SetColor(SettingsVariables.themeColor2)));
-            }
-            for (int i = 0; i < OfflineGrid.Children.Count; i++)
-            {
-                OfflineGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(OfflineGrid.Children[i]) % 2 == 0 ? SetColor(SettingsVariables.themeColor) : SetColor(SettingsVariables.themeColor2)));
-            }
+            RepaintStreamers();
 
             StreamerPanel.Children.Add(StreamerGrid);
             Grid.SetRow(StreamerGrid, 1);
@@ -609,6 +667,18 @@ namespace WpfApp1
 
             Functions.LoadElements(StreamerGrid, OfflineGrid);
             StreamerSize = SavedStreamers.Count;
+        }
+
+        private void RepaintStreamers()
+        {
+            for (int i = 0; i < StreamerGrid.Children.Count; i++)
+            {
+                StreamerGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(StreamerGrid.Children[i]) % 2 == 0 ? SetColor(SettingsVariables.themeColor) : SetColor(SettingsVariables.themeColor2)));
+            }
+            for (int i = 0; i < OfflineGrid.Children.Count; i++)
+            {
+                OfflineGrid.Children[i].SetValue(BackgroundProperty, new SolidColorBrush(Grid.GetRow(OfflineGrid.Children[i]) % 2 == 0 ? SetColor(SettingsVariables.themeColor) : SetColor(SettingsVariables.themeColor2)));
+            }
         }
 
         private void Hover(object sender, EventArgs e)
@@ -857,7 +927,7 @@ namespace WpfApp1
             if(IsOpened.SettingsIsOpen == false)
             {
                 IsOpened.SettingsIsOpen = true;
-                Settings SettingsWindow = new(StreamerRowList, ProfileImageList, TitleTextList) { Left = StreamTrackWindow.Left + StreamTrackWindow.ActualWidth + 20, Top = StreamTrackWindow.Top };
+                Settings SettingsWindow = new(RowPanel, ProfileImageList) { Left = StreamTrackWindow.Left + StreamTrackWindow.ActualWidth + 20, Top = StreamTrackWindow.Top };
                 SettingsWindow.Show();
             }
             if (SlideMenu.Opacity == 1)

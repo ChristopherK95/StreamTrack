@@ -46,7 +46,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
@@ -81,34 +80,6 @@
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="180" Width="auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.Column="0"
-                   x:Name="FontSizeLabel"
-                   Content="Font size:"
-                   Foreground="White"
-                   FontSize="18"
-                   FontFamily="Consolas"
-                   FontWeight="Bold"
-                   HorizontalContentAlignment="Left"/>
-
-                <Slider Grid.Column="1"
-                        x:Name="FontSizeSlider"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Value="2"
-                        Minimum="1"
-                        Maximum="3"
-                        TickPlacement="BottomRight"
-                        TickFrequency="1"
-                        IsSnapToTickEnabled="True"
-                        Style="{StaticResource SettingsSlider}"/>
-            </Grid>
-
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="180"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
@@ -141,7 +112,7 @@
                        FontWeight="DemiBold"/>
             </Grid>
 
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="180"/>
                     <ColumnDefinition Width="Auto"/>

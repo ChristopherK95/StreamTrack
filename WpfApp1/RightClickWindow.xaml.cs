@@ -16,14 +16,16 @@ namespace StreamTrack
         private readonly List<WpfApp1.Streamer> Streamers;
         private readonly List<Newtonsoft.Json.Linq.JObject> JsonList;
         private readonly string path;
+        private System.Action del;
 
-        public RightClickWindow(StackPanel panel, Window window, List<WpfApp1.SavedStreamer> SavedStreamers, List<WpfApp1.Streamer> Streamers, List<Newtonsoft.Json.Linq.JObject> JsonList, string path)
+        public RightClickWindow(StackPanel panel, Window window, List<WpfApp1.SavedStreamer> SavedStreamers, List<WpfApp1.Streamer> Streamers, List<Newtonsoft.Json.Linq.JObject> JsonList, string path, System.Action del)
         {
             this.panel = panel;
             this.SavedStreamers = SavedStreamers;
             this.Streamers = Streamers;
             this.JsonList = JsonList;
             this.path = path;
+            this.del = del;
             Left = window.Left + Mouse.GetPosition(window).X;
             Top = window.Top + Mouse.GetPosition(window).Y;
             InitializeComponent();
@@ -50,6 +52,7 @@ namespace StreamTrack
             {
                 Grid.SetRow(grid.Children[i], i);
             }
+            del();
             Close();
 
         }
