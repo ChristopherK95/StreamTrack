@@ -11,16 +11,14 @@ namespace WpfApp1
     /// </summary>
     public partial class Settings : Window
     {
-        public List<RowDefinition> rowDefinitions;
+        public List<StackPanel> rowPanels;
         public List<Image> images;
-        List<TextBlock> titleTexts;
 
         private bool saved = false;
-        public Settings(List<RowDefinition> rowDefinitions, List<Image> images, List<TextBlock> titleTexts)
+        public Settings(List<StackPanel> rowPanels, List<Image> images)
         {
-            this.rowDefinitions = rowDefinitions;
+            this.rowPanels = rowPanels;
             this.images = images;
-            this.titleTexts = titleTexts;
 
             InitializeComponent();
 
@@ -28,15 +26,12 @@ namespace WpfApp1
             HeightLabel.Content = "Row height: " + SettingsVariables.height;
             HeightSlider.ValueChanged += Slider_ValueChanged;
 
-            FontSizeSlider.Value = SettingsVariables.fontSize;
-            FontSizeLabel.Content = "Font size: " + SettingsVariables.fontSize;
-            FontSizeSlider.ValueChanged += FontSizeChanged;
-
             ThemeColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.themeColor));
             FontColorPreview.Background = new SolidColorBrush(Functions.SetColor(SettingsVariables.fontColor));
 
             ThemeColorTextPreview.Content = SettingsVariables.themeColor;
             FontColorTextPreview.Content = SettingsVariables.fontColor;
+
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -60,6 +55,15 @@ namespace WpfApp1
                 SettingsVariables.LoadSettings();
                 Functions.PaintUI("themeColor");
                 Functions.PaintUI("fontColor");
+                for (int i = 0; i < rowPanels.Count; i++)
+                {
+                    rowPanels[i].Height = SettingsVariables.height;
+                }
+                for (int i = 0; i < images.Count; i++)
+                {
+                    images[i].Height = SettingsVariables.height;
+                    images[i].Width = SettingsVariables.height;
+                }
             }
 
             Close();
@@ -72,9 +76,9 @@ namespace WpfApp1
                 SaveButton.IsEnabled = true;
                 SaveButtonShadow.ShadowDepth = 5;
             }
-            for(int i = 0; i < rowDefinitions.Count; i++)
+            for(int i = 0; i < rowPanels.Count; i++)
             {
-                rowDefinitions[i].Height = new GridLength(e.NewValue);
+                rowPanels[i].Height = e.NewValue;
             }
             for (int i = 0; i < images.Count; i++)
             {
@@ -83,43 +87,6 @@ namespace WpfApp1
             }
             SettingsVariables.height = e.NewValue;
             HeightLabel.Content = "Row height: " + SettingsVariables.height;
-        }
-
-        private void FontSizeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if(SaveButton.IsEnabled == false)
-            {
-                SaveButton.IsEnabled = true;
-                SaveButtonShadow.ShadowDepth = 5;
-            }
-
-            switch ((int)e.NewValue)
-            {
-                case 1:
-                    SettingsVariables.fontSize = 1;
-                    FontSizeLabel.Content = "Font size: 1";
-                    for(int i = 0; i < titleTexts.Count; i++)
-                    {
-                        titleTexts[i].FontSize = 10;
-                    }
-                    break;
-                case 2:
-                    SettingsVariables.fontSize = 2;
-                    FontSizeLabel.Content = "Font size: 2";
-                    for (int i = 0; i < titleTexts.Count; i++)
-                    {
-                        titleTexts[i].FontSize = 12;
-                    }
-                    break;
-                case 3:
-                    SettingsVariables.fontSize = 3;
-                    FontSizeLabel.Content = "Font size: 3";
-                    for (int i = 0; i < titleTexts.Count; i++)
-                    {
-                        titleTexts[i].FontSize = 14;
-                    }
-                    break;
-            }
         }
 
         private void Save(object sender, RoutedEventArgs e)
