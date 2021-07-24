@@ -42,7 +42,6 @@ namespace WpfApp1
         readonly private List<StreamerSearchResult> SearchResults = new();
         private List<SavedStreamer> SavedStreamers = new();
         private List<Newtonsoft.Json.Linq.JObject> JsonList = new();
-        readonly List<RowDefinition> StreamerRowList = new();
         readonly List<Image> ProfileImageList = new();
         readonly List<TextBlock> TitleTextList = new();
         readonly List<Grid> PanelList = new();
@@ -457,8 +456,6 @@ namespace WpfApp1
             for (int i = 0; i < SavedStreamers.Count; i++)
             {
                 RowDefinition StreamerRow = new() { Tag = SavedStreamers[i].name };
-                
-                StreamerRowList.Add(StreamerRow);
 
                 Grid RowColumns = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
                 ColumnDefinition ImgCol = new() { Width = GridLength.Auto };
@@ -508,24 +505,8 @@ namespace WpfApp1
                     ToolTip = "Offline"
                 };
 
-                //TextBlock SectionContent = new()
-                //{
-                //    Text = "",
-                //    //FontSize = SettingsVariables.fontSize == 1 ? 10 : SettingsVariables.fontSize == 2 ? 12 : 14,
-                //    FontSize = 16,
-                //    FontFamily = new FontFamily("Segoe UI"),
-                //    FontWeight = FontWeights.Bold,
-                //    Foreground = new SolidColorBrush(SetColor(SettingsVariables.fontColor2)),
-                //    TextTrimming = TextTrimming.CharacterEllipsis,
-                //    HorizontalAlignment = HorizontalAlignment.Stretch
-                //};
-                //TitleTextList.Add(SectionContent);
-
                 Label Section = new()
                 {
-                    //VerticalAlignment = VerticalAlignment.Bottom,
-                    //Padding = new Thickness(5, 0, 0, 0),
-                    //Content = SectionContent,
                     Content = "",
                     Foreground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                     Padding = new Thickness(5, 0, 0, 0),
@@ -533,16 +514,12 @@ namespace WpfApp1
                     FontFamily = new FontFamily("Segoe UI"),
                     FontWeight = FontWeights.DemiBold,
                     VerticalContentAlignment = VerticalAlignment.Top
-                    //HorizontalAlignment = HorizontalAlignment.Stretch,
-                    //VerticalContentAlignment = VerticalAlignment.Bottom
                 };
 
                 for (int j = 0; j < Streamers.Count; j++)
                 {
                     if(SavedStreamers[i].id == Streamers[j].user_id)
                     {
-                        //SectionContent.Text = Streamers[j].game_name;
-                        //SectionContent.ToolTip = Streamers[j].title;
                         Section.Content = Streamers[j].game_name;
                         Section.ToolTip = Streamers[j].title;
                         Live.Foreground = LiveBrush;
