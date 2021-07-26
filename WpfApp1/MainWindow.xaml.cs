@@ -174,28 +174,32 @@ namespace WpfApp1
 
         public void Notification(string streamer, string status)
         {
-            RowDefinition notification = new() { Height = new GridLength(40)};
+            RowDefinition notification = new();
             NotificationGrid.RowDefinitions.Add(notification);
+
+            Border NotifRow = new() { Margin = new Thickness(0, 5, 0, 0), CornerRadius = new CornerRadius(2), Background = new SolidColorBrush(status == "live" ? Color.FromRgb(57, 172, 99) : Color.FromRgb(227, 11, 72)), HorizontalAlignment = HorizontalAlignment.Center };
+            Grid.SetRow(NotifRow, NotificationGrid.RowDefinitions.Count);
+            NotificationGrid.Children.Add(NotifRow);
+
 
             ColumnDefinition StreamerNameCol = new() { Width = GridLength.Auto };
             ColumnDefinition TextCol = new() { Width = GridLength.Auto };
-            ColumnDefinition StatusCol = new();
-            Grid RowGrid = new();
+            ColumnDefinition StatusCol = new() { Width = GridLength.Auto };
+            Grid RowGrid = new() { HorizontalAlignment = HorizontalAlignment.Center };
             RowGrid.ColumnDefinitions.Add(StreamerNameCol);
             RowGrid.ColumnDefinitions.Add(TextCol);
             RowGrid.ColumnDefinitions.Add(StatusCol);
 
-            NotificationGrid.Children.Add(RowGrid);
-            Grid.SetRow(RowGrid, NotificationGrid.Children.Count);
+            NotifRow.Child = RowGrid;
 
             Label StreamerName = new()
             {
-                Content = streamer,
-                FontSize = 16,
+                Content = streamer.ToUpper(),
+                FontSize = 18,
                 FontWeight = FontWeights.Bold,
                 FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Colors.White),
-                Padding = new Thickness(5, 0, 0, 0),
+                Padding = new Thickness(15, 5, 0, 5),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalContentAlignment = VerticalAlignment.Center
             };
@@ -204,11 +208,12 @@ namespace WpfApp1
 
             Label Text = new()
             {
-                Content = " has gone ",
-                FontSize = 16,
+                Content = " | ",
+                FontSize = 18,
+                FontWeight = FontWeights.Bold,
                 FontFamily = new FontFamily("Segoe UI"),
                 Foreground = new SolidColorBrush(Colors.White),
-                Padding = new Thickness(0),
+                Padding = new Thickness(0, 5, 0, 5),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalContentAlignment = VerticalAlignment.Center
             };
@@ -218,17 +223,18 @@ namespace WpfApp1
             Label Status = new()
             {
                 Content = status == "live" ? "LIVE" : "OFFLINE",
-                FontSize = 16,
+                FontSize = 18,
                 FontWeight = FontWeights.Bold,
                 FontFamily = new FontFamily("Segoe UI"),
-                Foreground = new SolidColorBrush(status == "live" ? Color.FromRgb(233, 25, 22) : Color.FromRgb(117, 117, 117)),
-                Padding = new Thickness(0),
+                Foreground = new SolidColorBrush(Colors.White),
+                Padding = new Thickness(0, 5, 15, 5),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalContentAlignment = VerticalAlignment.Center
             };
             RowGrid.Children.Add(Status);
             Grid.SetColumn(Status, 2);
         }
+
         private void RefreshTicker(object sender, EventArgs e)
         {
             RefreshIcon.Spin = false;
@@ -297,14 +303,15 @@ namespace WpfApp1
                             if ((OfflineGrid.Children[j] as StackPanel).Tag.ToString() == onlineDiff[i].user_name)
                             {
                                 var streamer = OfflineGrid.Children[j];
-                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content = onlineDiff[i].title;
+                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).Content = onlineDiff[i].game_name;
+                                (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label).ToolTip = onlineDiff[i].title;
                                 (((((streamer as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[0] as StackPanel).Children[1] as FontAwesome5.SvgAwesome).Foreground = LiveBrush;
                                 OfflineGrid.Children.RemoveAt(j);
                                 StreamerGrid.Children.Add(streamer);
                                 Notification(onlineDiff[i].user_name, "live");
                                 Notifications.AddNotifs(onlineDiff[i].user_name, "Live");
                                 break;
-                            } 
+                            }
                         }
                     }
                     
@@ -334,6 +341,12 @@ namespace WpfApp1
                 _soundPlayer.Play();
                 NotifGridBorder.Visibility = Visibility.Visible;
                 NotificationTimer.Start();
+            }
+            for (int i = 0; i < Streamers.Count; i++)
+            {
+                var streamerPanel = ((((StreamerGrid.Children[i] as StackPanel).Children[0] as Grid).Children[1] as Grid).Children[1] as WrapPanel).Children[0] as Label;
+                streamerPanel.Content = Streamers.Find(streamer => streamer.user_name == StreamerGrid.Children[i].GetValue(TagProperty).ToString()).game_name;
+                streamerPanel.ToolTip = Streamers.Find(streamer => streamer.user_name == StreamerGrid.Children[i].GetValue(TagProperty).ToString()).title;
             }
         }
 

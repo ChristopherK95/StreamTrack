@@ -5,31 +5,7 @@
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>TwitchTrack64.ico</ApplicationIcon>
-		<!--<AssemblyName>StreamTrack</AssemblyName>
-    <RootNamespace>StreamTrack</RootNamespace>
-    <Platforms>AnyCPU;x86</Platforms>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>TwitchTrack_TemporaryKey.pfx</AssemblyOriginatorKeyFile>-->
 	</PropertyGroup>
-
-	<!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>-->
 
 	<ItemGroup>
 		<None Remove="ClearIcon.png" />
@@ -57,7 +33,7 @@
 		<NugetTools>$(PkgNuGet_CommandLine)\tools</NugetTools>
 		<SquirrelTools>$(Pkgsquirrel_windows)\tools</SquirrelTools>
 
-		<Version>1.0.4</Version>
+		<Version>1.0.5</Version>
 
 		<NuspecFile>$(SolutionDir)WpfApp1\ReleaseSpec.nuspec</NuspecFile>
 

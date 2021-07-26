@@ -254,10 +254,9 @@
                 </StackPanel>
             </ScrollViewer>
 
-                <Border x:Name="NotifGridBorder" Grid.Row="1" VerticalAlignment="Top" Panel.ZIndex="100" BorderBrush="#FF131721" BorderThickness="2" Height="Auto" Visibility="Hidden">
-                    <StackPanel Height="auto" Background="#2b2f36" VerticalAlignment="Top">
-                        <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch">
-                        </Grid>
+                <Border x:Name="NotifGridBorder" Grid.Row="1" VerticalAlignment="Top" Panel.ZIndex="100"  Height="Auto" Visibility="Hidden">
+                    <StackPanel Height="auto"  VerticalAlignment="Top">
+                        <Grid x:Name="NotificationGrid" VerticalAlignment="Stretch"/>
                     </StackPanel>
 
                     <Border.Effect>
