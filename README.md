@@ -11,7 +11,7 @@ Download the latest version of TwitchTrack.
 TwitchTrack will show whether a streamer is live or not and update when they do so.
 <br>
 <br>
-![Alt text](https://github.com/ChristopherK95/TwitchTrack/blob/master/TwitchTrackShowcase.png?raw=true)
+![Alt text](https://github.com/ChristopherK95/TwitchTrack/blob/master/TwitchTrackPreview.png?raw=true)
 ## Notifications
 When a streamer goes live or offline you'll be notified with a notification and a notification sound.
 <br>
