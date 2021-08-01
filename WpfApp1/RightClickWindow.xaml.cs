@@ -54,7 +54,6 @@ namespace StreamTrack
             }
             del();
             Close();
-
         }
 
         private void Border_MouseEnter(object sender, MouseEventArgs e)

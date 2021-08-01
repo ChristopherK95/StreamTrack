@@ -683,8 +683,11 @@ namespace WpfApp1
 
         private void LinkToStream(object sender, EventArgs e)
         {
-            string name = (sender as Label).Content.ToString();
-            Process.Start(new ProcessStartInfo($"https://twitch.tv/{name}/") { UseShellExecute = true });
+            if ((e as MouseButtonEventArgs).ChangedButton == MouseButton.Left)
+            {
+                string name = (sender as Label).Content.ToString();
+                Process.Start(new ProcessStartInfo($"https://twitch.tv/{name}/") { UseShellExecute = true });
+            }
         }
 
         public static Color SetColor(string hexColor)

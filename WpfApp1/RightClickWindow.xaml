@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamTrack"
         mc:Ignorable="d"
-        Title="RightClickWindow" Background="Transparent" AllowsTransparency="True" Width="150" Height="72" WindowStyle="None" ResizeMode="NoResize" PreviewMouseDown="Window_MouseUp">
+        Title="RightClickWindow" Background="Transparent" AllowsTransparency="True" Width="150" Height="72" WindowStyle="None" ResizeMode="NoResize">
     <Border BorderThickness="1" Background="#FF202125" BorderBrush="#FF72757E">
         <Grid>
             <Grid.RowDefinitions>
@@ -21,7 +21,7 @@
 
             <Label Grid.Row="2" Content="Delete" Foreground="White" FontSize="16" FontWeight="DemiBold"
                    VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Padding="5 0 0 0"
-                   MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave"/>
+                   MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" PreviewMouseDown="Window_MouseUp"/>
         </Grid>
 
         <Border.Effect>
