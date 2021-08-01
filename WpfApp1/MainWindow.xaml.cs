@@ -94,7 +94,7 @@ namespace WpfApp1
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            manager = await UpdateManager.GitHubUpdateManager(@"https://github.com/ChristopherK95/StreamTrack");
+            manager = await UpdateManager.GitHubUpdateManager(@"https://github.com/ChristopherK95/TwitchTrack");
             var currentVersion = manager.CurrentlyInstalledVersion();
             var updateInfo = await manager.CheckForUpdate();
             if (updateInfo.ReleasesToApply.Count > 0)
