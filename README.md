@@ -1,4 +1,4 @@
-![Logo](https://github.com/ChristopherK95/TwitchTrack/blob/master/TwitchTrack64.png?raw=true) TwitchTrack ![Github All Releases](https://img.shields.io/github/downloads/ChristopherK95/TwitchTrack/total?logo=GitHub&style=flat&color=orange) [![Latest Version](https://img.shields.io/github/v/release/ChristopherK95/TwitchTrack)](https://github.com/ChristopherK95/TwitchTrack/releases/latest) ![Lines of code](https://img.shields.io/tokei/lines/github/ChristopherK95/TwitchTrack?color=orange)
+![Logo](https://github.com/ChristopherK95/TwitchTrack/blob/master/TwitchTrack64.png?raw=true) TwitchTrack ![Github All Releases](https://img.shields.io/github/downloads/ChristopherK95/TwitchTrack/total?logo=GitHub&style=flat&color=orange) [![Latest Version](https://img.shields.io/github/v/release/ChristopherK95/TwitchTrack)](https://github.com/ChristopherK95/TwitchTrack/releases/latest)
 ============
 TwitchTrack is an application made to keep up with when your favourite <a href="https://twitch.tv">Twitch</a> streamers go live and what they're up to.
 # Download
