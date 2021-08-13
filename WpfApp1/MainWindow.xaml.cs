@@ -368,6 +368,20 @@ namespace WpfApp1
                 Grid.SetRow(OfflineGrid.Children[i], i);
                 OfflineGrid.Children[i].SetValue(BackgroundProperty, i % 2 == 0 ? new SolidColorBrush(SetColor(SettingsVariables.themeColor)) : new SolidColorBrush(SetColor(SettingsVariables.themeColor2)));
             }
+            //OfflineGrid.Visibility = Visibility.Hidden;
+        }
+
+        public void DeleteStreamerRow(StackPanel Row)
+        {
+            if (Row.Parent.GetValue(NameProperty).ToString() == "OfflineGrid")
+            {
+                OfflineGrid.Children.Remove(Row);
+            }
+            else
+            {
+                StreamerGrid.Children.Remove(Row);
+            }
+            ReOrder();
         }
 
         public async void StartupStreamerData()
@@ -463,8 +477,15 @@ namespace WpfApp1
                 Streamers.Add(Streamer);
             }
 
+            if (StreamerGrid != null)
+            {
+                StreamerPanel.Children.Remove(StreamerGrid);
+                StreamerPanel.Children.Remove(OfflineGrid);
+            }
+
             StreamerGrid = new() { Name = "StreamerGrid", Height = Double.NaN, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Stretch };
             OfflineGrid = new() { Name = "OfflineGrid", HorizontalAlignment = HorizontalAlignment.Stretch };
+
             var height = SettingsVariables.height;
             for (int i = 0; i < SavedStreamers.Count; i++)
             {
@@ -628,13 +649,13 @@ namespace WpfApp1
                 {
                     if (e.ChangedButton == MouseButton.Right)
                     {
-                        info = new(sender as StackPanel, this, SavedStreamers, Streamers, JsonList, path, RepaintStreamers);
+                        info = new(sender as StackPanel, this, SavedStreamers, Streamers, JsonList, path, DeleteStreamerRow);
                         info.Show();
                         Mouse.Capture(this, CaptureMode.None);
                         AddHandler();
                     }
                 };
-                if (Section.Content.ToString() != "")
+                if (Live.ToolTip.ToString() == "Live")
                 {
                     StreamerGrid.Children.Add(StreamerRowPanel);
                     Grid.SetRow(StreamerRowPanel, StreamerGrid.RowDefinitions.Count);

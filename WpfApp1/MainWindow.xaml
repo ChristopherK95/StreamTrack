@@ -208,8 +208,7 @@
 
                     </StackPanel>
 
-
-                    <TextBox x:Name="SearchBox"
+                        <TextBox x:Name="SearchBox"
                              Grid.Column="1"
                              Grid.ColumnSpan="2"
                              HorizontalAlignment="Stretch"
@@ -219,8 +218,8 @@
                              VerticalContentAlignment="Center"
                              VerticalAlignment="Stretch"
                              Visibility="Hidden"
-                             BorderThickness="0" KeyUp="Search"/>
-                </Grid>
+                             BorderThickness="0" KeyUp="Search" />
+                    </Grid>
             </StackPanel>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch" Grid.Row="1">

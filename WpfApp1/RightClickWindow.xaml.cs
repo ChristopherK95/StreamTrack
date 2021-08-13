@@ -16,9 +16,9 @@ namespace StreamTrack
         private readonly List<WpfApp1.Streamer> Streamers;
         private readonly List<Newtonsoft.Json.Linq.JObject> JsonList;
         private readonly string path;
-        private System.Action del;
+        private System.Action<StackPanel> del;
 
-        public RightClickWindow(StackPanel panel, Window window, List<WpfApp1.SavedStreamer> SavedStreamers, List<WpfApp1.Streamer> Streamers, List<Newtonsoft.Json.Linq.JObject> JsonList, string path, System.Action del)
+        public RightClickWindow(StackPanel panel, Window window, List<WpfApp1.SavedStreamer> SavedStreamers, List<WpfApp1.Streamer> Streamers, List<Newtonsoft.Json.Linq.JObject> JsonList, string path, System.Action<StackPanel> del)
         {
             this.panel = panel;
             this.SavedStreamers = SavedStreamers;
@@ -45,14 +45,7 @@ namespace StreamTrack
                 Serializer.Serialize(FileWriter, JsonList);
             }
 
-            Grid grid = panel.Parent as Grid;
-            grid.RowDefinitions.Remove(grid.RowDefinitions[Grid.GetRow(panel)]);
-            grid.Children.Remove(panel);
-            for(int i = 0; i < grid.RowDefinitions.Count; i++)
-            {
-                Grid.SetRow(grid.Children[i], i);
-            }
-            del();
+            del(panel);
             Close();
         }
 
