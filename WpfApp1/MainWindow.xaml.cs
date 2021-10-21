@@ -65,12 +65,18 @@ namespace WpfApp1
         RightClickWindow info;
 
         int StreamerSize;
+
+        System.Windows.Forms.NotifyIcon notifyIcon = new System.Windows.Forms.NotifyIcon();
         public MainWindow()
         {
             InitializeComponent();
 
             Loaded += MainWindow_Loaded;
+
             
+            notifyIcon.Icon = new System.Drawing.Icon("Resources/TwitchTrack64.ico");
+            notifyIcon.Visible = true;
+
             CurrentTokenLabel.Content = SettingsVariables.authKey;
 
             SlideDown = Resources["SlideDown"] as Storyboard;
@@ -233,6 +239,8 @@ namespace WpfApp1
             };
             RowGrid.Children.Add(Status);
             Grid.SetColumn(Status, 2);
+
+            notifyIcon.ShowBalloonTip(3000, streamer, status == "live" ? "has gone live" : "has gone offline", System.Windows.Forms.ToolTipIcon.None);
         }
 
         private void RefreshTicker(object sender, EventArgs e)
